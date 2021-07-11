@@ -1,0 +1,1101 @@
+---
+title: "Dasar Pemrograman R"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: 
+      collapsed: false
+    df_print: paged
+  pdf_document: default
+  html_notebook: default
+---
+# Introduction
+
+Sebelum masuk lebih jauh, pada bagian ini akan dibahas hal – hal dasar tentang pemrograman R yang harus diketahui dan dikuasai. Hal yang paling sederhana yang dapat dilakukan R adalah sebagai kalkulator. Contoh perintah:
+```{r}
+2 + 4
+```
+Akan muncul hasil [1] 6, [1] menunjukkan bahwa yang ditampilkan adalah dari elemen pertama. Tanda `>` adalah prompt yang menunjukkan bahwa R sedang dalam posisi siap menerima perintah baru. Jika perintah belum lengkap akan menjadi tanda `+` (ada perintah atau bagian yang belum lengkap).
+R adalah bahasa pemrograman yang ***case-sensitive***. Karena itu, penulisan nama objek atau nilai berupa karakter sangat bergantung dari kapitalisasinya.
+```{r}
+a <- 5
+a
+```
+
+```{r}
+#A
+
+##Error: object 'A' not found
+```
+# 1. *Assignment*
+
+Bahasa pemrograman R mempunyai sedikit perbedaan dengan bahasa pemrograman pada umumnya. Salah satunya adalah pada operator *assignment*. Hampir semua bahasa pemrograman lain menggunakan tanda `=` sebagai operator *assignment*. Di R, yang utama dan paling banyak digunakan ialah panah kiri (`<-`). `obj <- expr` berarti "masukkan nilai hasil dari operasi di sisi kanan (`expr`) ke dalam objek di sisi kiri (`obj`)". Pada contoh berikut, perintah untuk memasukkan nilai numerik `5` ke objek yang disebut `x` adalah sebagai berikut:
+```{r}
+x <- 5
+x
+```
+```{r}
+5 -> y
+y
+```
+Apakah bisa menggunakan operator `=` sebagai operator *assignment*? Tentu saja bisa digunakan.
+```{r}
+z = 5
+z
+```
+Hal ini sangat membantu jika Anda seorang programmer yang menggunakan bahasa pemrograman lain yang menggunakan operator `=` sebagai operator *assignment*. Jadi Anda tidak perlu bingung dengan “Kapan saya harus menggunakan `<-` atau `=`?”. Tapi saya mendorong Anda untuk terbiasa menggunakan `<-` saat membuat program menggunakan R. Jika Anda menggunakan RStudio, Anda dapat menuliskan operator `<-` dengan menekan tombol `ALT` + `-`.
+
+# 2. Operator *Assignment* Lainnya
+
+Ada beberapa operator *assignment* lainnya yang dapat digunakan di R. Operator `<-` (nilai dari sebelah kanan dimasukkan ke dalam objek di sebelah kiri) begitu juga operator `->` berlaku sebaliknya, operator ini bersifat lokal. Selain itu, terdapat operator yang bersifat global yaitu `<<-` dan kebalikannya `->>` yang memiliki fungsi sama dimana nilai dari sebelah kanan (kiri) dimasukkan ke dalam objek di sebalah kiri (kanan). Pada operator ini, nilai objek akan muncul di bagian list values. Perhatikan contoh berikut ini dan perhatikan perubahan list variabel di bagian *Environment window*:
+```{r}
+contoh <- function() {
+  i <- 1
+}
+contoh()
+```
+
+```{r}
+contoh1 <- function() {
+  i <<- 1
+}
+contoh1()
+```
+
+Seperti yang anda lihat, operator `<-` tidak akan ada penambahan variabel baru di *Environment window* sedangkan jika menggunakan operator `<<-` akan ada penambahan variabel baru di *Environment window*.
+
+Ketika menggunakan R, setiap yang ada di R disebut objek. Jenis - jenis objek data yang ada di R adalah vector, factor, matriks, array, dataframe, list, dan objek berupa function.
+
+# 3. Penamaan Objek
+
+Aturan penamaan objek di R seperti vector, matriks, dataframe, dan lain - lain. Hampir sama dengan aturan penamaan dalam bahasa pemrograman lain. Namun ada beberapa aturan khusus yang terdapat di R. Berikut aturan penamaan objek di R.
+
+- Menggunakan kombinasi alfabet (a-z, A-Z), angka (0-9), titik atau *underscore*.
+- Diawali alfabet, titik atau *underscore*. Tidak boleh diawali dengan angka.
+- Tidak mengandung spasi, tab atau karakter khusus seperti `!`,`@`,`#` dan lainnya.
+- Sebaiknya tidak menggunakan beberapa penamaan atau nilai yang sudah digunakan oleh R (function dan keyword lainnya). Misalnya `c`,`q`,`TRUE`,`FALSE`,`df`,`dt`,`rnorm`,`runif`,`rf`,`exp`, dan lain-lain. Untuk mengetahui nama-nama yang sudah digunakan oleh R. Anda dapat mengetikkan perintah `?reserved` di console RStudio.
+
+# 4. Kalkulasi Matematika di R
+
+## 4.1. Operasi Aritmatika
+
+Proses perhitungan akan ditangani oleh fungsi khusus. R akan memahami urutannya secara benar. Kecuali kita secara eksplisit menetapkan yang lain. Sebagai contoh jalankan sintaks berikut:
+```{r}
+2+4*2
+
+# dibandingkan dengan ini
+(2+4)*2
+```
+Berdasarkan kedua hasil tersebut dapat disimpulkan bahwa ketika kita tidak menetapkan urutan perhitungan menggunakan tanda kurung, R akan secara otomatis akan menghitung terlebih dahulu perkalian atau pembangian.
+
+Operator aritmatika yang disediakan R adalah sebagai berikut:
+- `+` (*Addition*, untuk operasi penjumlahan)
+- `-` (*Substraction*, untuk operasi pengurangan)
+- `*` (*Multiplication*, untuk operasi perkalian)
+- `/` (*Division*, untuk operasi pembagian)
+- `^` (*Exponentiation*, untuk operasi pemangkatan)
+- `%%` (*Modulus*, untuk mencari sisa pembagian)
+- `%/%` (*Integer*, untuk mencari bilangan bulat hasil pembagian saja dan tanpa sisa pembagian)
+
+Untuk lebih memahaminya berikut contoh sintaks penerapan operator tersebut.
+
+```{r}
+# Addition
+5+3
+# Substraction
+5-3
+# Multiplication
+5*3
+# Division
+5/3
+# Exponetiation
+5^3
+# Modulus
+5%%3
+# Integer
+5%/%3
+```
+## 4.2. Fungsi Aritmetik
+
+Selain fungsi operator aritmetik, pada R juga telah tersedia fungsi aritmetik yang lain seperti logaritmik, ekponensial, trigonometri, dll.
+
+### Logaritma dan Eksponensial
+
+Untuk contoh fungsi logaritmik dan eksponensial jalankan sintaks berikut:
+```{r}
+log2(8) # logaritma basis 2 untuk 8
+log10(8) # logaritma basis 10 untuk 8
+exp(8) # eksponensial 8
+```
+### Fungsi trigonometri
+
+Fungsi trigonometri yang ditampilkan seperti sin,cos, tan, dll.
+```{r}
+x <- 0
+cos(x) # cos x
+sin(x) # Sin x
+tan(x) # Tan x
+acos(x) # arc-cos x
+asin(x) # arc-sin x
+atan(x) #arc-tan x
+```
+Catatan: `x` dalam fungsi trigonometri memiliki satuan radian.
+
+Pada Paket `pracma` fungsi-fungsi trigonometri dapat ditambah lagi. Fungsi-fungsi tersebut antara lain:
+```{r eval = FALSE}
+install.packages("pracma",repos = "http://cran.us.r-project.org")
+```
+```{r}
+library(pracma)
+x <- 1
+cot(x) # cotan x
+csc(x) # cosecan x
+sec(x) # secan x
+acot(x) # arc-cotan x
+acsc(x) # arc-cosecan x
+asec(x) # arc-secan x
+```
+
+### Fungsi Hiperbolik
+
+Fungsi hiperbolik yang tersedia antara lain:
+```{r}
+cosh(x) 
+sinh(x)
+tanh(x)
+acosh(x)
+asinh(x)
+atanh(x)
+```
+Fungsi tersebut dapat ditambah lagi dari Paket `pracma`. Fungsi-fungsi yang tersedia antara lain:
+```{r}
+library(pracma)
+coth(x)
+csch(x)
+sech(x)
+acoth(x)
+acsch(x)
+asech(x)
+```
+### Fungsi Matematik Lainnya
+
+Fungsi lainnya yang dapat digunakan adalah fungsi absolut, akar kuadrat, dll. Berikut adalah contoh sintaks penggunaan fungsi absolut dan akar kuadrat.
+```{r}
+abs(-2) # nilai absolut -2
+sqrt(4) # akar kuadrat 4
+```
+## 4.3. Operasi Relasi
+
+Operator relasi digunakan untuk membandingkan satu objek dengan objek lainnya. Operator yang disediakan R sebagai berikut:
+
+- `>` (lebih besar dari)
+- `<` (lebih kecil dari)
+- `==` (sama dengan)
+- `>=` (lebih besar sama dengan)
+- `<=` (lebih kecil sama dengan)
+- `!=` (tidak sama dengan)
+
+Berikut adalah penerapan operator tersebut:
+```{r}
+x <- 34
+y <- 35
+
+# Operator >
+x > y
+
+# Operator <
+x < y
+
+# operator ==
+x == y
+
+# Operator >=
+x >= y
+
+# Operator <=
+x <= y
+
+# Operator !=
+x != y
+```
+## 4.4. Operasi Logika
+
+Operator logika hanya berlaku pada vektor dengan tipe logical, numeric, atau complex. Semua angka bernilai 1 akan dianggap bernilai logika `TRUE`. Operator logika yang disediakan R sebagai berikut:
+
+- `&&` (operator logika AND)
+- `||` (operator logika OR)
+- `!`  (operator logika NOT)
+- `&` (operator logika AND element wise)
+- `|` (operator logika OR element wise)
+
+Penerapannya terdapat pada sintaks berikut:
+```{r}
+v <- c(TRUE,TRUE, FALSE)
+t <- c(FALSE,FALSE,FALSE)
+
+# Operator &&
+print(v&&t)
+
+# Operator ||
+print(v||t)
+
+# Operator !
+print(!v)
+
+# operator &
+print(v&t)
+
+# Operator |
+print(v|t)
+```
+**Catatan:*
+Operator `&` dan `|` akan mengecek logika tiap elemen pada vektor secara berpesangan (sesuai urutan dari kiri ke kanan). Operator `&&` dan `||` hanya mengecek dari kiri ke kanan pada observasi pertama. Misal saat menggunakan `&&` jika observasi pertama `TRUE` maka observasi pertama pada vektor lainnya akan dicek, namun jika observasi pertama `FALSE` maka proses akan segera dihentikan dan menghasilkan `FALSE`.
+
+# 5. Vektor
+
+Vector adalah objek data paling sederhana yang ada di dalam R. Secara umum jenis vector terbagi 2, yaitu numerik dan character. Ada banyak sekali cara untuk membuat sebuah vektor di R. Di bagian ini akan dibahas beberapa cara yang banyak dan mungkin akan sering Anda gunakan.
+
+## 5.1. Jenis - Jenis Vektor
+
+### **Double**
+
+Sebuah vektor "double" yang berisikan angka. Angka tersebut dapat bersifat positif ataupun negatif, besar atau kecil, dan memiliki desimal atau tidak. Secara umum, R akan menyimpan angka ke dalam tipe "double".
+```{r}
+x <- c(1,2,3,4)
+x
+```
+Anda dapat menggunakan perintah `typeof` untuk melihat jenis objek apa yang dimiliki oleh suatu objek. Sebagai contoh:
+```{r}
+typeof(x)
+```
+Beberapa fungsi R merujuk bahwa "double" sebagai numerik. Double adalah istilah ilmu komputer. Ini mengacu pada jumlah byte tertentu yang digunakan komputer Anda untuk menyimpan nomor, tetapi menurut saya "numerik" jauh lebih intuitif saat melakukan Data Science. 
+
+### **Integer**
+
+Vektor integer menyimpan bilangan bulat (integer), angka yang tidak memiliki komponen desimal. Sebagai data scientist, anda tidak akan sering menggunakan tipe integer karena anda dapat menyimpan integer sebagai objek "double".
+
+Anda dapat secara khusus membuat bilangan bulat di R dengan mengetikkan angka diikuti dengan huruf besar `L`. Sebagai contoh:
+```{r}
+int <- c(-1L, 2L, 4L)
+int
+typeof(int)
+```
+Catatan: R tidak akan menyimpan angka ke dalam tipe "integer" kecuali menambahkan `L`. Bilangan bulat tanpa `L` dibelakangnya akan disimpan sebagai tipe "double". Perbedaan antara `4` dan `4L` adalah bagaimana R menyimpan angka ini di memori komputer. Integer secara harafiah lebih kecil memori yang dibutuhkan dibandingkan dengan "double".
+
+### **Characters**
+
+Vektor characters menyimpan potongan - potongan kecil teks. Anda dapat membuat vektor karakter di R dengan mengetikkan characters atau string yang diapit oleh tanda kutip `"`:
+```{r}
+text <- c("Hello",  "World")
+text
+
+typeof(text)
+
+typeof("Hello")
+```
+Elemen individu dari vektor characters dikenal sebagai string. Perhatikan bahwa string dapat berisi lebih dari sekedar huruf. Anda dapat merakit string karakter dari angka atau simbol juga.
+
+Dua buah vektor atau lebih dapat digabungkan dengan fungsi `c()`. Namun, jika salah satu vektor bertipe character, maka vektor hasil gabungan akan menjadi vektor character. Contoh di bawah ini menggabungkan vektor `x` dan `y`. Vektor `x` adalah vektor numerik, sedangkan `y` adalah vektor character. Karena ada satu atau lebih elemen yang berupa character, maka ketika `x` dan `y` digabungkan akan menjadi vektor character.
+```{r}
+x <- rep(3,5)
+y <- c("a","b","c")
+c(x,y)
+```
+Cara lain yang dapat digunakan untuk membuat vektor character adalah menggunakan fungsi `paste()`, `paste0()` atau `sprintf()`. Jalankan dan perhatikan perbedaan dari contoh perintah di bawah ini:
+```{r}
+paste("A", 1:5)
+paste0("A", 1:5)
+sprintf("A%s", 1:5)
+```
+### **Logical**
+
+Vektor logical berisi `TRUE` dan `FALSE`, bentuk data Boolean R. Logical sangat membantu untuk melakukan tugas seperti membandingkan:
+```{r}
+3 > 4
+```
+Kapanpun anda menulis `TRUE` dan `FALSE` dengan huruf kapital, R akan membacanya sebagai data logical. R juga menerima `T` dan `F` sebagai singkatan dari `TRUE` dan `FALSE`, kecuali mereka didefinisikan sebagai objek yang menerima sebuah nilai (`T <- 5`). Karena `T` dan `F` dapat berubah nilai, maka lebih disarankan jika menggunakan `TRUE` dan `FALSE`.
+```{r}
+logic <- c(TRUE, FALSE, TRUE)
+logic
+typeof(logic)
+typeof(F)
+```
+### **Complex dan Raw**
+
+Doubles, integer, characters, dan logical adalah tipe paling umum di R, namun R juga dapat membaca 2 tipe lagi yaitu: complex dan raw. Jika dalam analisis data, tipe ini sangat jarang sekali digunakan namun untuk penelitian terlebih bersifat matematis akan sering digunakan:
+
+Vektor complex terdiri dari bilangan complex. Untuk membuatnya, tambahkan bagian imajiner ke dalam angka dengan `i`:
+```{r}
+comp <- c(1 + 1i, 1 + 2i, 1 + 3i)
+comp
+typeof(comp)
+```
+Vektor raw berisi data raw bytes. Membuat vektor raw sangat kompleks, namun anda dapat membuat sebuah vektor raw kosong dengan panjang *n* menggunakan `raw(n)`. Sebagai contoh:
+```{r}
+raw(3)
+typeof(raw(3))
+```
+## 5.2. Perintah untuk membuat vektor
+
+### **Fungsi `c()`**
+
+Fungsi yang paling sering digunakan untuk membuat sebuah vektor adalah dengan menggunakan fungsi `c()`.
+```{r}
+x <- c(1,2,3,4,5)
+x
+is.vector(x)
+```
+`is.vector` digunakan untuk cek apakah object adalah sebuah vektor atau tidak. akan bernilai `TRUE` jika objek adalah vektor dan `FALSE` jika tidak.
+
+Pada script di atas, dibuat sebuah objek x berupa vektor numerik. Setiap elemen dipisah menggunakan tanda koma (,). Fungsi ini dapat digunakan untuk membuat vektor numerik atau character. Indeks di R dimulai dari 1, tidak seperti kebanyakan bahasa pemrograman lain yang indeksnya dimulai dari 0. Hal ini cukup memudahkan pengguna karena umumnya manusia menghitung mulai dari 1, bukan dari 0.
+
+Ketika Anda ingin mengambil elemen ke 2 dari vektor x, maka Anda dapat menjalankan perintah:
+```{r}
+x[2]
+```
+Elemen vektor terdiri dari minimal 1 nilai. R menyimpan 1 nilai sebagai vektor dengan panjang 1:
+```{r}
+vec <- 2
+vec
+
+is.vector(vec)
+
+length(vec)                 
+length(x)                    
+```
+Perintah `length` digunakan untuk melihat berapa panjang vektor.
+
+### **Tanda titik dua / *colon* (`;`)**
+
+Untuk membuat sebuah vektor numerik berurutan secara meningkat atau menurun. Lihat contoh berikut ini:
+```{r}
+x <- 1:10
+x
+```
+Fungsi dari operator `:` pada contoh diatas adalah membuat vektor numerik dengan nilai 1 s/d 10. Tentu saja operator *increment* ini hanya dapat digunakan untuk numerik dan meningkat sebesar 1 nilai. Operator ini dapat juga digunakan untuk membuat vektor dengan nilai menurun.
+```{r}
+x <- 10:1
+x
+```
+### **Fungsi `seq()`**
+
+Fungsi ini dapat digunakan untuk membuat vektor berurutan dan dengan *increment* tertentu.
+```{r}
+x <- seq(from = 1, to = 10)
+x
+```
+Secara default *increment* dari fungsi *seq()* adalah `by = 1`. Jika ingin nilai *increment* lain maka hanya perlu mengganti nilai pada argumen `by`. Fungsi ini juga hanya dapat digunakan untuk membuat vektor numerik.
+```{r}
+x <- seq(from = 1, to = 10, by = 2)
+x
+```
+rentang nilai yang dikeluarkan adalah 2.
+```{r}
+x <- seq(from = 1, to = 10, length.out = 5)
+x
+```
+dari 1 - 10, dibentuk vektor dengan panjang 5.
+```{r}
+x <- seq(from = 1, to = 10, along.with = 1:4)
+x
+```
+dari 1 - 10, dibentuk vektor dengan panjang vektor lain (1:4)
+
+### **Fungsi `rep()`**
+
+Dengan fungsi `rep()` Anda dapat membuat sebuah vector dengan mengulang-ulang nilai yang diinginkan sebanyak yang dibutuhkan.
+```{r}
+x <- rep(3,10)
+x
+```
+perintah tersebut, berarti bahwa elemen bernilai 3 diulang sebanyak 10 kali.
+
+## 5.3. Operasi Vektor
+
+Jika melakukan operasi dengan vektor, operasi akan diterapkan ke setiap elemen vektor. Contoh disediakan pada sintaks di bawah ini:
+```{r}
+pendapatan <- c(2000, 1800, 2500, 3000)
+names(pendapatan) <- c("Andi", "Joni", "Lina", "Rani")
+pendapatan
+
+# Kalikan pendapatan dengan 3
+pendapatan*3
+```
+Seperti yang dapat dilihat, R mengalikan setiap elemen dengan bilangan pengali.
+
+Kita juga dapat mengalikan vektor dengan vektor lainnya.Contohnya disajikan pada sintaks berikut:
+```{r}
+# membuat vektor dengan panjang 
+# sama dengan dengan vektor pendapatan
+coefs <- c(2, 1.5, 1, 3)
+
+# Mengalikan pendapatan dengan vektor coefs
+pendapatan*coefs
+```
+Berdasarkan sintaks tersebut dapat terlihat bahwa operasi matematik terhadap masing-masing vektor dapat berlangsung jika panjang vektornya sama.
+
+Berikut adalah fungsi lain yang dapat digunakan pada operasi matematika vektor.
+```{r}
+max(x) # memperoleh nilai maksimum x
+min(x) # memperoleh nilai minimum x
+range(x) # memperoleh range vektor x
+length(x) # memperoleh jumlah vektor x
+sum(x) # memperoleh total penjumlahan vektor x
+prod(x) # memeperoleh produk elemen vektor x
+mean(x) # memperoleh nilai mean vektor x
+sd(x) # standar deviasi vektor x
+var(x) # varian vektor x
+sort(x) # mengurutkan elemen vektor x dari yang terbesar
+```
+Contoh penggunaan fungsi tersebut disajikan beberapa pada sintaks berikut:
+```{r}
+# Menghitung range pendapatan
+range(pendapatan)
+
+# menghitung rata-rata dan standar deviasi pendapatan
+mean(pendapatan)
+
+sd(pendapatan)
+```
+# 6. Factor
+
+Factor merupakan bentuk lebih luas dari vektor. Biasanya factor lebih sering digunakan untuk menyimpan data nominal atau ordinal. Misalnya vektor character yang berisi `"male"` dan `"female"`. Pada vektor character, nilainya adalah `"male"` dan `"female"` seperti terlihat apa adanya. Namun pada factor, tampilan dari isi datanya mungkin `"male"` dan `"female"` tetapi isi dari factor adalah pengkodean numerik. Misal untuk `"female"` nilai sebenarnya adalah 1, sedangkan `"male"` bernilai 2.
+```{r}
+fc <- factor(c("SD", "SMA", "SMP", "SMP", "SD", "SMA", "SD", "SMP"))
+fc
+```
+Nilai sebenarnya dari factor tersebut adalah:
+```{r}
+print.default(fc)
+```
+Factor mempunyai level, secara default levelnya adalah berdasarkan urutan alfabet. Untuk merubah level dari sebuah factor, gunakan argumen `levels =`.
+```{r}
+factor(fc, levels = c("SD", "SMP", "SMA"))
+factor(fc, levels = c("SD", "SMP", "SMA"), ordered = TRUE)
+```
+# 7. Matriks
+
+## 7.1. Pengenalan Matriks
+
+Matriks adalah objek di R yang memiliki 2 dimensi, seperti halnya matriks di aljabar linier. Jika ketika membuat sebuah matriks elemennya memiliki minimal 1 elemen bertipe character maka seluruh matriks tersebut akan bertipe character. Membuat matriks di R menggunakan vector yang dikonversi dimensinya. Untuk membuat sebuah matriks, pertama berikan `matrix` sebuah vektor untuk disusun menjadi sebuah matriks. `matrix` akan menyusun vektor anda ke dalam sebuah matriks dengan memberikan banyak baris. Hal ini juga berlaku dengan menentukan argumen `ncol`, yang memberi tahukan R berapa banyak kolom yang ada di matriks:
+```{r}
+x <- c(1:20)
+m <- matrix(data = x,nrow = 4)
+m
+```
+Argumen `byrow = TRUE` artinya matriks akan setiap elemen `x` diisikan ke `m` memenuhi baris terlebih dahulu. Jika `byrow = FALSE` maka setiap elemen `x` diisikan ke `m` berdasarkan kolom terlebih dahulu.
+```{r}
+m <-- matrix(x, nrow = 4, byrow = FALSE)
+m
+
+m <-- matrix(x, nrow = 4, byrow = TRUE)
+m
+```
+Untuk membuat matriks dengan nilai yang sama seluruhnya, maka dapat dilakukan seperti berikut.
+```{r}
+matrix(data = 0, nrow = 5, ncol = 6)
+```
+Untuk mengakses elemen dari suatu matriks, Anda dapat menggunakan indeks dari baris atau kolomnya.
+```{r}
+m[4, ]
+m[ ,3]
+m[4,3]
+m[c(2,4),3]
+```
+R menyediakan sebuah fungsi yaitu `diag()` untuk mengakses nilai-nilai pada diagonal utama sebuah matriks.
+```{r}
+diag(m)
+```
+Anda juga dapat mengganti nilai dari elemen suatu matriks dengan menggunakan operator *assignment*.
+```{r}
+m[4, 3] <- 0
+m
+```
+Untuk perintah - perintah terkait `matrix` lebih lanjut, dapat diakses di help page (atau ketik `?matrix` di console)
+
+## 7.2. Perhitungan Matriks
+
+Kita juga dapat melakukan operasi matematika pada matriks. Pada operasi matematika pada matriks proses yang terjadi bisa lebih kompleks dibanding pada vektor, dimana kita dapat melakukan operasi untuk memperoleh gambaran data pada tiap kolom atau baris.
+
+Berikut adalah contoh operasi matematika sederhana pada matriks:
+```{r}
+# mengalikan masing-masing elemen matriks dengan 2
+m*2
+
+# memperoleh nilai log basis 2 pada masing-masing elemen matriks
+pascal(3)
+log2(pascal(3))
+```
+Seperti yang telah penulis jelaskan sebelumnya, kita juga dapat melakukan operasi matematika untuk memperoleh hasil penjumlahan elemen pada tiap baris atau kolom dengan menggunakan fungsi `rowSums()` untuk baris dan `colSums()` untuk kolom.
+```{r}
+# Total pada tiap kolom
+colSums(m)
+
+# Total pada tiap baris
+rowSums(m)
+```
+Jika kita tertarik untuk mencari nilai rata-rata tiap baris arau kolom kita juga dapat menggunakan fungsi `rowMeans()` atau `colMeans()`. Berikut adalah contoh penerapannya:
+```{r}
+# Rata-rata tiap baris
+rowMeans(m)
+
+# Rata-rata tiap kolom
+colMeans(m)
+```
+Kita juga dapat melakukan perhitungan statistika lainnya menggunakan fungsi `apply()`. Berikut adalah format sederhananya:
+```{r eval = FALSE}
+apply(x, MARGIN, FUN)
+```
+Catatan:
+
+- `x` : data matriks
+- `MARGIN` : Nilai yang dapat digunakan adalah `1` (untuk operasi pada baris) dan `2` (untuk operasi pada kolom)
+- `FUN` : fungsi yang diterapkan pada baris dan kolom
+
+untuk mengetahui fungsi (`FUN`) apa saja yang dapat diterapkan pada fungsi `apply()` jalankan sintaks bantuan berikut:
+```{r eval = FALSE}
+help(apply)
+```
+Berikut adalah contoh penerapannya:
+```{r}
+# Rata-rata pada tiap baris
+apply(m, 1, mean)
+
+# Median pada tiap kolom
+apply(m, 2, median)
+```
+
+# 8. Array
+
+Array merupakan objek seperti matriks dengan dimensi lebih banyak. Jika matriks hanya mempunyai 2 dimensi, maka array dapat memiliki lebih dari 2 dimensi.
+
+<center>
+![](image/array.png)
+Gambar 8.1. Ilustrasi Array 3 Dimensi
+</center>
+
+`array` tidak dapat disesuaikan seperti `matrix` dan pada dasarnya melakukan hal yang sama seperti mengatur atribut `dim`. Untuk menggunakan array, berikan vektor sebagai argumen pertama dan vektor dimensi sebagai argumen kedua, sekarang disebut `dim`.
+```{r}
+ar <- array(c(11:14, 21:24, 31:34), dim = c(2, 2, 3))
+ar
+```
+Salah satu array yang ada setelah anda install R adalah array `Titanic`.
+```{r}
+Titanic
+```
+Untuk mengetahui ukuran dimensi dari sebuah array `Titanic` dapat menggunakan fungsi `dim()`.
+```{r}
+dim(Titanic)
+```
+Artinya, array `Titanic` adalah array 4 dimensi.
+
+# 9. List
+
+Objek `list` pada dasarnya mirip dengan vektor karena mereka mengelompokkan data ke himpunan 1 dimensi. Namun, `list` tidak mengelompokkan nilai - nilai individual seperti halnya vektor; `list` mengelompokkan objek R secara bersamaan, seperti vektor dan `list` lainnya. Sebagai contoh, kita dapat membuat sebuah `list` yang berisi vektor numerik dengan panjang 31 di elemen pertama, sebuah vektor character dengan panjang 1 di elemen kedua, dan sebuah `list` baru dengan panjang 2 di elemen ketiganya. Untuk melakukan ini, gunakan fungsi `list`.
+
+Contoh membuat list dengan fungsi `list()`:
+```{r}
+lst <- list(1:40,"A",c(4,5,2),list("TRUE","FALSE"))
+lst
+```
+Cara memanggil elemen `list`:
+```{r}
+lst[[3]]
+```
+Indeks kurung siku ganda memberi tahu anda terkait elemen `list` mana yang sedang ditampilkan. Indeks kurung tunggal memberi tahu anda subelemen mana dari suatu elemen yang sedang ditampilkan. Misalnya, 1 adalah sub-elemen pertama dari elemen pertama dalam `list`. "A" adalah sub-elemen pertama dari elemen kedua. Notasi dua sistem ini muncul karena setiap elemen `list` dapat berupa objek R apapun, termasuk vektor (atau `list` lainnya) baru dengan indeksnya sendiri.
+
+`list` adalah tipe dasar objek di R, setara dengan vektor. Seperti vektor, mereka digunakan sebagai blok bangunan untuk membuat lebih banyak jenis objek R yang lebih canggih.
+
+Seperti yang dapat Anda bayangkan, struktur `list` bisa menjadi sangat rumit, tetapi fleksibilitas ini menjadikan `list` alat penyimpanan serba guna yang berguna di R: Anda dapat mengelompokkan apa pun dengan `list`.
+
+<center>
+![](image/list.png)
+Gambar 9.1. Ilustrasi objek di dalam R
+</center>
+
+# 10. DataFrame
+
+Dataframe adalah bentuk 2 dimensi dari `list`, karena seperti layaknya sebuah tabel di Ms Excel yang terdiri dari baris dan kolom dengan nama masing - masing kolom berbeda. Dataframe mengelompokkan grup vektor secara bersamaan dalam bentuk tabel 2D. Setiap vektor akan berubah menjadi sebuah kolom di tabel. Maka dari itu, setiap kolom dari dataframe akan berisi tipe data yang berbeda; namun didalam setiap kolom setiap sel harus memiliki tipe data yang sama, seperti ilustrasi dibawah ini:
+
+<center>
+![](image/dataframe.png)
+Gambar 10.1. Ilustrasi objek di dalam R
+</center>
+
+Contoh dataframe yang ada di dalam R salah satunya adalah `mtcars`.
+```{r}
+mtcars
+```
+Umumnya ketika Anda melakukan analisis data, maka data yang Anda gunakan adalah berupa tabel. Di dalam R sebuah tabel yang terdiri dari baris dan kolom disebut dataframe atau `data.frame`. Baris di dataframe disebut `observation` dan kolom disebut `variable`.
+
+<center>
+![](image/tidy_df.png)
+Gambar 10.2. Dataframe Terstruktur
+</center>
+
+Untuk membuat sebuah dataframe Anda dapat menggunakan fungsi `data.frame()`. Misalnya Anda akan membuat sebuah dataframe bernama `data1` yang berisi 5 observation dan 2 variable. Variable pertama bernama `x1` berisi sebuah vector numeric dengan nilai {1, 3, 2, 6, 4} dan variable kedua bernama `v2` berisi vector character dengan nilai {“a”, “A”, “c”, “d”, “E”}. Anda dapat membuat vector `x1` dan `v1` terlebih dahulu menggunakan fungsi `c()` (atau fungsi lain yang sesuai untuk membuat vector). Kemudian membuat dataframe dari vector tersebut. Perhatikan contoh berikut ini:
+```{r}
+x1 <- c(1, 3, 2, 6, 4)
+v1 <- c("a", "A", "c", "d", "E")
+data1 <- data.frame(x1 = x1, v1 = v1)
+```
+Anda dapat melihat dataframe yang sudah dibuat tersebut dengan memanggil nama objek dataframe.
+```{r}
+data1
+```
+**Catatan!** Ketika Anda membuat sebuah dataframe yang berisi sebuah variable character pada R dengan versi 3.6.3 atau sebelumnya, maka secara otomatis variable dari vector character tersebut akan dirubah menjadi variable factor. Hal ini terjadi karena fungsi `data.frame()` mempunyai sebuah argumen `stringsAsFactors = TRUE`. Pada R versi 4.0.0 atau lebih baru, variable dari vector character akan tetap dijadikan sebuah variable character karena argumen `stringsAsFactors = FALSE`. Tentu saja Anda dapat merubahnya dengan menambahkan argumen tersebut ketika Anda membuat dataframe.
+```{r}
+data1 <- data.frame(x1 = x1, v1 = v1, stringsAsFactors = TRUE) # atau TRUE
+data1
+```
+Untuk mengetahui ukuran dimensi sebuah dataframe Anda dapat gunakan fungsi `dim()` seperti yang sudah dicontohkan pada pembahasan array.
+```{r}
+dim(data1)
+```
+Hasil dari fungsi `dim()` untuk dataframe atau matrix adalah sebuah vector dengan elemen pertama adalah banyaknya observation, sedangkan elemen kedua adalah banyaknya variable. Pada contoh di atas berarti dataframe `data1` memiliki 5 observation dan 2 variable.
+
+Untuk mengetahui struktur dari sebuah dataframe Anda dapat gunakan fungsi `str()` (str-ucture). Dengan fungsi ini Anda dapat memperoleh informasi lebih lengkap dari sebuah dataframe seperti banyaknya observation dan variable, nama-nama variable, tipe variable, dan beberapa nilai baris pertama untuk masing-masing variable.
+```{r}
+str(data1)
+```
+Dari hasil di atas Anda dapat ketahui bahwa objek `data1` adalah sebuah dataframe berukuran 5 observation (obs.) dan 2 variable. Nama variable yang ada adalah `x1` dan `v1`. Variable `x1` adalah variable bertipe numeric, sedangkan `v1` adalah variable character alias factor. Nilai pada baris pertama dataframe `data1` untuk variable `x1` adalah 1 dan variable `v1` adalah “a”. Nilai “a” dikodekan sebagai 1, “A” dikodekan sebagai 2, “c” dikodekan sebagai 3, dan seterusnya.
+
+Selanjutnya untuk mengambil nilai sebuah variable dari sebuah dataframe dapat menggunakan tanda dollar (1$1) atau menggunakan indeks. Perhatikan contoh berikut:
+```{r}
+# Menggunakan tanda dollar
+data1$x1
+
+# Menggunakan indeks urutan posisi variable
+data1[, 1]
+
+# Menggunakan nama variable pada indeks
+data1[, "x1"]
+```
+Untuk membuat variable baru Anda dapat menggunakan cara yang hampir sama dan menggunakan assignment. Berikut ini kita akan membuat variable baru bernama `x2` berupa variable numeric.
+```{r}
+data1$x2 <- 1:5
+data1
+
+str(data1)
+```
+Tipe `num` artinya variable tersebut adalah double dan tipe `int` adalah tipe integer.
+
+Kemudian kita buat variable baru bernama `x3` yang merupakan penjumlahan dari variable `x1` dan `x2`.
+```{r}
+data1$x3 <- data1$x1 + data1$x2
+str(data1)
+```
+# 11. Control Statements
+
+Control Statements adalah ekspresi yang digunakan untuk mengontrol eksekusi dan aliran program berdasarkan kondisi yang disediakan dalam pernyataan. Struktur ini digunakan untuk membuat keputusan setelah menilai variabel.
+
+Di dalam R, terdapat 6 tipe control statements sebagai berikut:
+- if-else condition
+- for loop
+- while loop
+- repeat and break statement
+- return statement
+- next statement
+
+## 11.1. If-else condition
+
+Struktur kontrol ini memeriksa ekspresi yang diberikan dalam tanda kurung benar atau tidak. Jika benar, eksekusi statements dalam kurung kurawal `if` {} akan dilanjutkan. Jika tidak, statements yang ada di `else` akan dieksekusi. Perhatikan contoh berikut:
+```{r}
+x <- 5
+  
+# Cek nilainya apakah kurang dari atau lebih dari 10
+if(x > 10){
+  print(paste(x, "is greater than 10"))
+}else{
+  print(paste(x, "is less than 10"))
+}
+```
+## 11.2. For-loop
+
+Ini adalah jenis loop atau urutan pernyataan yang dieksekusi berulang kali sampai kondisi keluar tercapai. Iterasi yang digunakan pada *looping* ini terbatas dan dideklarasikan di awal. Perhatikan contoh berikut:
+```{r}
+x <- letters[4:10]
+  
+for(i in x){
+  print(i)
+}
+```
+For-loop ini dapat didesain sebagai *nested loop*. *Nested* berarti loop di dadalam loop. Selain itu, *nested loop* digunakan untuk memanipulasi matriks. Perhatikan contoh berikut:
+```{r}
+m <- matrix(2:15, 2)
+  
+for (r in seq(nrow(m))) {
+  for (c in seq(ncol(m))) {
+    print(m[r, c])
+  }
+}
+```
+## 11.3. While loop
+
+*While loop* adalah jenis loop lain yang diulang sampai suatu kondisi terpenuhi. Ekspresi pengujian diperiksa terlebih dahulu sebelum mengeksekusi dari *body* loop. Perhatikan contoh berikut:
+```{r}
+x = 1
+  
+# Print 1 to 5
+while(x <= 5){
+  print(x)
+  x = x + 1
+}
+```
+## 11.4. Repeat-Break Statement
+
+*Repeat* adalah loop yang dapat diulang berkali - kali tetapi tidak ada kondisi keluar untuk keluar dari loop. Jadi, *break statement* digunakan untuk keluar dari loop. *Break statement* dapat digunakan dalam semua jenis loop untuk keluar dari loop. Perhatikan contoh berikut:
+```{r}
+x = 1
+  
+# Print 1 to 5
+repeat{
+  print(x)
+  x = x + 1
+  if(x > 5){
+    break
+   }
+}
+```
+## 11.5. Return Statement
+
+*Return statement* digunakan untuk mengembalikan hasil dari fungsi yang dieksekusi dan mengembalikan kontrol ke fungsi pemanggil. Perhatikan contoh berikut:
+```{r}
+# Cek apakah nilainya positif atau negatif
+func <- function(x){
+  if(x > 0){
+    return("Positive")
+  }else if(x < 0){
+    return("Negative")
+  }else{
+    return("Zero")
+  }
+}
+  
+func(1)
+func(0)
+func(-1)
+```
+## 11.6. Next Statement
+
+*Next statement* digunakan untuk melewati iterasi saat ini tanpa mengeksekusi pernyataan lebih lanjut dan melanjutkan siklus iterasi berikutnya tanpa menghentikan perulangan. Perhatikan contoh berikut:
+```{r}
+# Defining vector
+x <- 1:10
+  
+# Print even numbers
+for(i in x){
+  if(i%%2 != 0){
+    next #Jumps to next loop
+  }
+  print(i)
+}
+```
+# 12. Function dan Packages
+
+Pada dasarnya R adalah bahasa pemrograman **functional** atau **Functional Programming** (FP). Secara khusus R memiliki apa yang dikenal sebagai **first class function**. Anda dapat melakukan apa saja dengan fungsi seperti yang dapat Anda lakukan dengan vector: Anda dapat memasukkan mereka ke dalam sebuah objek, menyimpannya dalam `list`, menjadikannya sebagai argumen pada fungsi yang lain, membuat fungsi di dalam fungsi, dan bahkan menjadikannya sebagai hasil keluaran dari suatu fungsi.
+
+## 12.1. Fungsi yang sudah ada
+
+Karena dibuat untuk memudahkan analisis data, R mempunyai banyak fungsi yang tersedia untuk melakukan analisis statistik. Untuk mendapatkan nilai rata-rata dari sebuah vector numeric Anda dapat langsung gunakan fungsi `mean()`. Untuk mendapatkan milai minimum atau maksimum tersedia fungsi `min()` dan `max()`. Fungsi `sd()` dapat digunakan untuk mendapatkan nilai standard deviasi atau fungsi `var()` untuk mendapatkan nilai ragam (varians). Perhatikan contoh berikut ini:
+```{r}
+x <- seq(1, 10,by = 1)
+
+# Rata-rata vector x
+mean(x)
+
+# Minimum dari vector x
+min(x)
+
+# Maksimum dari vector x
+max(x)
+```
+Jika Anda ingin mencari nilai minimum dan maksimum sekaligus, Anda dapat gunakan fungsi `range()`. Output dari fungsi ini adalah vector numeric dengan dua elemen berisi nilai minimum dan maksimum.
+```{r}
+range(x)
+```
+Jika Anda ingin mencari nilai statistik lima serangkai (minimum, Q1, Q2 atau median, Q3, maksimum), Anda dapat gunakan fungsi `summary()`.
+```{r}
+summary(x)
+```
+<center>
+![](image/checklist_package.png)
+Gambar 12.1. Aktifkan Package pada Tab Packages
+</center>
+
+Jika fungsi atau data yang akan Anda gunakan berasal dari sebuah package, maka Anda dapat gunakan fungsi `library()`, `require()` atau klik beri tanda checklist pada tab **Packages** seperti pada Gambar 10.1 untuk mengaktifkan package tersebut pada session yang sedang Anda gunakan. Tentunya package tersebut harus sudah Anda install sebelumnya. Misalnya Anda ingin menggunakan data `flights` dari package `nycflights13`. Hal pertama Anda harus pastikan package tersebut sudah terinstall dengan baik di R Anda. Jika Anda belum install package tersebut Anda dapat menginstallnya dengan perintah berikut.
+```{r eval = FALSE}
+install.packages("nycflights13")
+```
+Kaetika Anda akan install sebuah package, nama package tersebut harus berupa *string*. Anda hanya perlu melakukan satu kali install saja, tidak perlu install ketika setiap kali akan Anda gunakan. Sekarang Anda coba untuk memanggil data `flights` dari package `nycflights13` tanpa mengaktifkan package terlebih dahulu. Maka akan muncul sebuah error yang menyatakan bahwa objek `flights` tidak ditemukan.
+```{r}
+#flights
+#Error: object 'flights' not found
+```
+Karena data `flights` ada di dalam package `nycflights13` maka Anda perlu aktifkan terlebih dahulu package tersebut. Anda dapat mengaktifkannya dengan perintah berikut ini.
+```{r}
+library(nycflights13)
+```
+Kemudian panggil data `flights`. Kita gunakan fungsi `head()` untuk menampilkan beberapa baris pertama saja dari data. Secara default fungsi `head()` akan menampilkan 6 baris pertama saja dari data yang kita sebutkan pada argumen pertamanya.
+```{r}
+head(flights)
+```
+Karena package `nycflights13` sudah Anda aktifkan sebelumnya maka ketika data `flights` dipanggil tidak akan muncul error.
+
+## 12.2. Membuat fungsi sendiri
+
+Ketika Anda membuat sebuah script yang akan digunakan berkali-kali namun dengan nilai input yang berbeda-beda, maka ada baiknya script tersebut dibuat menjadi sebuah fungsi atau ***function*** sesuai dengan kebutuhan Anda atau *User-Defined Function*. Untuk membuat function di R Anda dapat menggunakan fungsi `function()`. Misalnya Anda mempunyai script seperti berikut.
+```{r}
+a <- 5
+b <- 7
+d <- a + b
+d
+```
+Kemudian ketika Anda ingin menggunakan nilai lain untuk `a` namun dengan nilai `b` yang sama, misalnya `a <- 2`, Anda perlu menjalankan perintah seperti berikut.
+```{r}
+a <- 2
+d <- a + b
+d
+```
+Jika script di atas dibuat sebuah fungsi, misalnya dengan nama fungsi `sum_ab`, maka Anda dapat membuatnya seperti berikut ini. Fungsi tersebut memiliki 2 buah parameter atau argumen, yaitu `a` dan `b` berupa nilai numerik. Argumen `a` dan `b` harus diisi ketika memanggil fungsi tersebut. Fungsi `return()` di dalam fungsi `sum_ab()` menentukan nilai yang akan dijadikan keluaran (*output*) dari fungsi `sum_ab()`.
+```{r}
+sum_ab <- function(a, b){
+  d <- a + b
+  return(d)
+}
+```
+Selanjutnya panggil fungsi tersebut dengan argumen yang diperlukan.
+```{r}
+sum_ab(a = 5, b = 7)
+```
+Merubah nilai `a <- 2` dapat dilakukan dengan lebih mudah.
+```{r}
+sum_ab(a = 2, b = 7)
+```
+Bagaimana jika tidak ada argumen yang diberikan ketika memanggil fungsi tersebut? Dalam hal ini akan terjadi *error*. *Error* yang terjadi karena argumen pada fungsi ini adalah tipe argumen yang harus diisi atau tidak mempunyai nilai *default*.
+```{r}
+#sum_ab()
+## Error in sum_ab() : argument "a" is missing, with no default
+```
+Apa itu nilai *default* argumen pada sebuah fungsi? Kita akan sedikit memodifikasi fungsi `sum_ab()` yang sudah dibuat sebelumnya.
+```{r}
+sum_ab <- function(a = 1, b = 1){
+  d <- a + b
+  return(d)
+}
+```
+Fungsi `sum_ab()` sekarang memiliki nilai default untuk setiap argumennya. Argumen `a` memiliki nilai `1` dan `b` juga `1`. Ketika Anda panggil fungsi `sum_ab()` tanpa menuliskan nilai untuk argumennya maka secara *default* nilai-nilai tersebut yang akan digunakan.
+```{r}
+sum_ab()
+sum_ab(a = 5, b = 3)
+```
+## 12.3. Install Package
+
+Package adalah sebuah kumpulan fungsi atau data yang dibuat untuk memudahkan proses di R tanpa harus menuliskan ulang script yang dibutuhkan. Saat ini package menjadi bagian yang sangat penting bagi *Data Analyst* atau *Data Scientist* ketika menggunakan R. Karena dengan package tambahan (yang belum ada ketika install R) pekerjaan dalam mengolah data menjadi lebih efisien.
+
+Untuk dapat menggunakan fungsi atau data dari sebuah package tambahan Anda perlu install terlebih dahulu. Salah satu contohnya sudah disampaikan, yaitu package {nycflights13}. Selanjutnya Anda dapat install juga package {ggplot2}. Package ini sangat berguna untuk membuat visualisasi data di R. Untuk melihat *help* dari package ini Anda dapat melakukannya dengan cara yang akan di bahas nanti.
+
+Install package di R sangat mudah dengan fungsi `install.packages("namapackage")` atau melalui menu Install di tab **Packages** di RStudio. Yang perlu Anda perhatikan ketika akan install package adalah koneksi internet, nama package dan *repository*-nya. Koneksi internet yang baik sangat dibutuhkan ketika install package untuk R mendownload file package tersebut. Selanjutnya nama package juga harus sesuai dari penulisannya, termasuk huruf kapitalnya. Misalnya Anda ingin install package {ggplot2}, maka Anda harus menuliskannya dengan `install.packages("ggplot2")`. Jika penulisannya tidak sama maka package tersebut tidak akan diinstall. Perhatikan contoh berikut ini.
+```{r eval = FALSE}
+install.packages("ggplot")
+```
+Contoh di atas adalah pemberitahuan ketika package yang ingin Anda install tidak tersedia. Ketika nama package yang Anda tuliskan ada di *repository* maka akan ada *pop-up* download file package. Sekarang coba perhatikan contoh berikut ini.
+```{r eval = FALSE}
+install.packages("ggplot2")
+```
+Hal yang perlu Anda perhatikan selanjutnya adalah repository package. Ada beberapa *repository* yang digunakan sebagai tempat penyimpanan package. *Repository* yang paling umum adalah [Comprehensive R Archieve Network](https://cran.r-project.org/) (CRAN). Ketika Anda menggunakan fungsi `install.packages()` maka secara otomatis package yang akan diinstall berasal dari CRAN. Selain itu ada beberapa repository lain seperti [GitHub](https://github.com/), [Bitbucket](http://bitbucket.org/), [Bioconductor](https://www.bioconductor.org/) dan lain-lain. Pada kesempatan ini hanya akan membahas *repository* GitHub saja.
+
+Umumnya GitHub digunakan sebagai tempat untuk *repository* package yang belum ada di CRAN atau versi pengembangan (*development*) yang belum submit ke CRAN. Untuk dapat install package dari GitHub Anda dapat gunakan package {devtools} atau {remotes}. Saya sarankan untuk menggunakan package {devtools} karena dapat Anda gunakan juga untuk membuat package jika dibutuhkan. Anda juga mungkin perlu install [RTools](https://cran.r-project.org/bin/windows/Rtools/) versi yang sesuai dengan versi R Anda jika menggunakan OS Windows.
+
+Misalnya Anda ingin install package {DataExplorer} dari Github. Yang perlu Anda ketahui adalah link/username dari *repository* package tersebut. *Repository* GitHub package {DataExplorer} adalah [https://github.com/boxuancui/DataExplorer](https://github.com/boxuancui/DataExplorer). Argumen yang dibutuhkan adalah username dan nama repository. Username dari package ini adalah `boxuancui` dan repository-nya adalah `DataExplorer`. Anda dapat gunakan perintah berikut ini.
+```{r eval = FALSE}
+install.packages("devtools")
+devtools::install_github("boxuancui/DataExplorer")
+```
+# 13. *Help*
+
+Ketika Anda akan menggunakan sebuah fungsi di R ada baiknya untuk Anda mengetahui beberapa hal tentang fungsi tersebut. Yang harus Anda ketahui dari sebuah fungsi paling tidak adalah untuk apa fungsi tersebut digunakan, apa saja argumen yang diperlukan, bagaimana penggunaannya dan output seperti apa yang dihasilkan.
+
+Misalnya Anda ingin gunakan fungsi `mean()`, maka Anda dapat mengetikkan `?mean` atau `help("mean")`. Jika Anda menggunakan RStudio maka akan muncul halaman *help* dari fungsi `mean()` di tab **Help**.
+
+<center>
+![](image/help_mean.png)
+
+Gambar 13.1. Halaman Help Fungsi
+</center>
+
+Umumnya pada sebuah halaman help akan ada informasi fungsi tersebut berasal dari package apa, pada bagian sebelumnya diketahui fungsi `mean()` berasal dari package {base}. Kemudian deskripsi singkat tentang fungsi (*Description*), penggunaan (*Usage*), penjelasan setiap argumen pada fungsi tersebut (*Arguments*), penjelasan lebih detail (*Value/Detail*, jika ada) dan contoh penggunaan fungsi (*Examples*, jika ada).
+
+Hal ini jg berlaku jika Anda ingin melihat halaman *help* dari sebuah data yang ada di R, baik itu dari package {base} ataupun package tambahan yang lain. Misalnya halaman *help* dari data `iris`. Ketikkan `?iris` pada console RStudio untuk menampilkan halaman *help* data `iris`. Berikut diketahui bahwa data iris berasal dari package {datasets}.
+
+<center>
+![](image/help_iris.png)
+
+Gambar 13.2. Halaman Help Data Iris
+</center>
+
+Jika Anda ingin mencari help sebuah fungsi yang berasal dari package tertentu yang sudah Anda install sebelumnya tetapi belum Anda aktifkan package tersebut, maka Anda dapat gunakan format *namespace (namapackage::namafungsi)*. Sebagai ilustrasi Anda dapat mencari help dari fungsi `read_excel()` dari package {readxl} ([https://readxl.tidyverse.org/](https://readxl.tidyverse.org/)). Untuk mencari hellp fungsi tersebut Anda dapat ketikkan `?readxl::read_excel` di console dan akan muncul halaman help seperti pada gambar berikut:
+
+<center>
+![](image/help_readexcel.png)
+Gambar 13.3. Halaman Help Fungsi read_excel().
+</center>
+
+Cara lain untuk mencari *help* di R adalah dengan menggunakan fungsi `help()`. Misalnya untuk *help* dari fungsi `mean()` Anda ketikkan di console `help('mean")`, `help("iris")` untuk data `iris`. Untuk melihat *help* sebuah fungsi dari package yang belum Anda aktifkan, Anda juga harus menyebutkan nama packagenya seperti `help("read_excel", package = "readxl")`. Apa yang terjadi jika Anda tidak menyebutkan nama packagenya?
+```{r}
+help("read_excel")
+```
+Tetapi jika Anda sudah mengaktikan package tersebut, baik menggunakan fungsi `library()`, `require()` ataupun dengan klik pada tab **Packages**, Anda tidak perlu menyebutkan nama package tersebut. Cukup mengetikkan `help("read_excel")`.
+```{r eval = FALSE}
+library(readxl)
+help("read_excel")
+```
+Untuk melihat *help* dari suatu package, misalnya package {readxl}, Anda dapat gunakan `help(package = "readxl")`.
+
+# 14. Import dan Export Data
+
+Sebagai alat bantu untuk mengolah, analisis dan visualisasi data sekaligus juga sebagai bahasa pemrograman tentunya R harus memiliki kemampuan untuk mebaca data. Oleh karena itu, R dibekali kemampuan membaca data atau import dari file dan database. Selain harus bisa imprort data, kemampuan lain adalah export data atau hasil analisis data.
+
+Jalankan program berikut untuk memastikan semua package yang dibutuhkan sudah terinstall.
+```{r eval = FALSE}
+{
+  if(!require(readr)){
+    install.packages("readr")
+  }
+  if(!require(readxl)){
+    install.packages("readxl")
+  }
+  if(!require(writexl)){
+    install.packages("writexl")
+  }
+  if(!require(RMySQL)){
+    install.packages("RMySQL")
+  }
+  if(!require(RPostgres)){
+    install.packages("RPostgres")
+  }
+}
+```
+
+## 14.1. File Eksternal
+
+Jenis file yang akan dibahas adalah textfile (*.txt), CSV (*.csv) dan Excel file.
+
+### Textfile
+
+Textfile adalah salah satu jenis file yang sering digunakan untuk menyimpan atau bertukar data. Aktifkan package yang dibutuhkan dengan menggunakan fungsi `library()`. Untuk import data dari textfile, kita dapat menggunakan fungsi `read_delim()` dari package {readr}.
+```{r}
+library(readr)
+```
+Kita dapat menggunakan fungsi `read_delim()` seperti di bawah ini. Argumen `file =` adalah lokasi dan nama file yang ingin kita import. Kemudian argumen `delim =` adalah untuk menunjukkan delimiter/separator/pemisah kolom yang ada pada file tersebut. Argumen `col_names = TRUE` jika baris pertama pada file tersebut adalah nama kolom. Contoh perintah di bawah ini akan menyimpan hasil import (jika berhasil) ke dalam sebuah objek dataframe bernama `iris`.
+```{r}
+iris <- read_delim(file = "iris.txt", delim = ",", col_names = TRUE)
+```
+Kita dapat melihat data yang sudah berhasil diimport dengan memanggil dataframe tersebut.
+```{r}
+iris
+```
+### CSV
+
+Selain textfile, CSV juga merupakan format file yang sering digunakan untuk menyimpan atau bertukar data. Package {readr} menyiapkan fungsi `read_csv()` untuk import data dari file CSV.
+```{r}
+iris2 <- read_csv("iris.csv", col_names = TRUE)
+iris2
+```
+### Excel
+
+Jenis file lain yang juga sering digunakan adalah file Excel. Kita dapat menggunakan package {readxl} dengan fungsi `read_excel()` untuk import data dari file Excel. Argumen `path =` adalah lokasi dan nama file Excel yang akan kita gunakan.
+```{r}
+library(readxl)
+iris_xl <- read_excel(path = "iris.xlsx", col_names = TRUE)
+iris_xl
+```
+## 14.2. Database
+
+R sebagai program untuk statistik dan analisis data juga didukung dengan kemampuan untuk mengakses data pada database. Kita akan demonstrasikan cara import data dari *Database Management System* (DBMS) MySQL dan PostgreSQL.
+
+### MySQL
+
+Agar R dapat berinteraksi dengan DBMS MySQL kita perlu install package {RMySQL}. Package {RMySQL} hingga saat ini masih mempunyai keterbatasan, yaitu dapat berjalan dengan baik pada DBMS MySQL versi 5. Namun pada MySQL versi 8 tidak dapat eksport data dari R menjadi tabel di datbase.
+
+Pertama kita harus membuat koneksi ke database yang akan diakses. Misalnya database yang akan digunkana bernama `insw`.
+```{r}
+library(RMySQL)
+```
+```{r eval = FALSE}
+my_con <- dbConnect(drv = RMySQL::MySQL(),
+                    # alamat IP database
+                    host = "localhost",
+                    # nama database
+                    dbname = "insw",
+                    # user ID
+                    user = "user1",
+                    # password
+                    password = "P@ssw0rd",
+                    # port database
+                    port = 3306
+                    )
+my_con
+```
+Kita dapat mengetahui nama tabel yang ada di dalam database yang kita akses.
+```{r eval = FALSE}
+dbListTables(my_con)
+```
+Untuk dapat import tabel dari database menjadi dataframe di R, kita dapat gunakan fungsi `dbReadTable()`. Sebutkan objek koneksi yang sebelumnya kita buat dan nama tabel yang akan kita akses.
+```{r eval = FALSE}
+my_iris <- dbReadTable(my_con, "iris")
+head(my_iris)
+```
+Setelah selesai mengakses database, jangan lupa untuk memutus koneksi (*disconnect*) dengan fungsi `dbDisconnect()`.
+```{r eval = FALSE}
+dbDisconnect(my_con)
+```
+### PostgreSQL
+
+DBMS lain yang akan digunakan untuk contoh kali ini adlaah PostgreSQL. Ada beberapa package yang dapat digunakan untuk membuat koneksi dan akses DBMS PostgreSQL dari R, diantaranya adalah package {RPostgres} dan {RPostgreSQL}. Kali ini kita akan menggunakan package {RPostgre}.
+```{r eval = FALSE}
+library(RPostgres)
+pg_con <- dbConnect(RPostgres::Postgres(),
+                    # alamat IP database
+                    host = "rosie.db.elephantsql.com",
+                    # port
+                    port = 5432,
+                    # nama database
+                    dbname = "nfjvlkjy",
+                    # username
+                    user = "nfjvlkjy",
+                    # password
+                    password = "uDTq8jJo6kMxAg1TECN3WK8UeXGKqndJ"
+                    )
+pg_con
+```
+Gunakan fungsi `dbListTables()` untuk mengetahui nama tabel yang sudah ada di dalam database tersebut.
+```{r eval = FALSE}
+dbListTables(pg_con)
+```
+Sama seperti ketika kita import tabel dari DBMS MySQL, kita gunakan fungsi `dbReadTable()` dengan menyebutkan nama tabel yang akan diimport.
+```{r eval = FALSE}
+pg_iris <- dbReadTable(pg_con, "iris")
+head(pg_iris)
+```
+Untuk eksport dataframe dari R menjadi tabel di database kita gunakan fungsi `dbWriteTable()`. Argumen `name =` adalah nama tabel di DBMS hasil ekspor nanti, `value =` adalah nama dataframe yang akan kita ekspor.
+```{r eval = FALSE}
+dbWriteTable(pg_con, name = "aep_iris", value = iris, row.names = FALSE, overwrite = TRUE)
+dbListTables(pg_con)
+```
+Terakhir setelah selesai mengakses data yang kita butuhkan selalu putuskan koneksi (*disconnect*).
+```{r eval = FALSE}
+dbDisconnect(pg_con)
+```
+## 14.3. File RDS
+
+File RDS adalah format file eksternal dari objek yang ada di R. Semua data ketika kita mengolah data di disimpan di dalam memory. Oleh karena itu ketika kita menutup sesi R yang sedang berjalan, maka semua data atau objek yang ada akan hilang. Namun kita bisa ekspor objek yang nantinya ingin kita gunakan kembali di dalam sebuah file eksternal dengan format RDS.
+
+Untuk dapat menggunakan data yang ada di dalam file RDS kita dapat gunakan fungsi `readRDS()` dari pakage {base} atau `read_rds()` dari package {readr}. Kita akan gunakan fungsi `read_rds()`.
+```{r}
+data <- read_rds("ACS.rds")
+data
+```
+
+<p style="text-align:right;">Arranged by: Aditya Wisnugraha Sugiyarto S.Si.</p>
