@@ -1,0 +1,257 @@
+---
+title: "Data Preprocessing and Understanding"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: 
+      collapsed: false
+    df_print: paged
+---
+
+Sebagai Data Scientist sebelum kita melakukan pemodelan data, ada beberapa hal yang harus kita lakukan terlebih dahulu yaitu memahami bagaimana data itu. Ada beberapa hal yang harus kita ketahui dan kita lakukan yang terkait dengan data:
+
+**Tipe Data**: Dataset berbeda dalam beberapa hal. Sebagai contoh, atribut – atribut digunakan untuk menjelaskan objek – objek data dari tipe – tipe yang berbeda, kualitatif atau kuantitatif. Dataset juga dapat memiliki karakter khusus; misalnya beberapa dataset mengandung deret waktu (time series) atau objek dengan hubungan eksplisit ke objek yang lainnya. Menentukan tipe data dapat digunakan untuk memilih tool yang mana dan teknik apa yang akan digunakan untuk menganalisis data.
+
+**Kualitas Data**: Data seringkali jauh dari sempurna. Walaupun kebanyakan teknik dapat mentolerir beberapa tingkat ketidaksempurnaan dalam data, pemahaman dan peningkatan kualitas data secara khsuus meningkatkan kualitas dari analisis yang dihasilkan. Isu kualitas data meliputi adanya noise dan outlier; data yang hilang, data yang tidak konsisten, atau data duplikat.
+
+**Preprocessing Data**: Preprocessing ini digunakan untuk membuat data lebih sesuai untuk kita olah. Seringkali data mentah perlu diproses agar data tersebut sesuai untuk analisis. Selain meningkatkan kualitas data, data seringkali dimodifikasi agar lebih cocok dengan teknik tertentu. Sebagai contoh, atribut kontinu seperti panjang dapat ditranformasi ke dalam kategori diskret seperti pendek, sedang atau panjang, agar teknik tertentu dapat diaplikasikan. Selain itu, banyaknya atribut dalam dataset sering kali dikurangi karena banyak teknik bekerja lebih efektif ketika data memiliki sejumlah atribut yang relatif lebih sedikit.
+
+**Menganalisis data dalam bentuk relasinya**: Satu pendekatan untuk analisis data adalah menemukan hubungan antara objek-objek data dan kemudian melakukan analisis sisanya menggunakan hubungan-hubungan ini daripada menggunakan objek-objek data itu sendiri. Sebagai contoh, kita dapat menghitung kemiripan atau jarak antar sepasang objek dan kemudian melakukan analisis – clustering, klasifikasi, atau deteksi anomali– berdasarkan pada kemiripan dan jarak tersebut.
+
+# 1. Tipe Data
+
+- Data Record
+
+Data set ini merupakan kumpulan record (objek data), masing-masing record mengandung sekumpulan field data (atribut). Untuk kebanyakan bentuk dasar dari data record, tidak ada hubungan yang eksplisit diantara record atau field data, dan setiap record (objek) memiliki himpunan atribut yang sama. Data record biasanya disimpan dalam flat file atau dalam basis data relasioanal. Basis data relasional lebih dari pada koleksi data, tetapi data mining seringkali tidak menggunakan informasi tambahan yang ada dalam basis data relasional.
+
+- Data transaksi
+
+Data transaksi adalah bentuk khusus dari data record, dimana setiap record (transaksi) meliputi sekumpulan item. Sebagai contoh pada toko grosir, sekumpulan produk yang dibeli oleh seorang pelanggan selama satu kali perjalanan belanja merupakan sebuah transaksi, dengakan produk individual yang dibeli merupakan item. Tipe data ini dinamakan data market basket karena item-item dalam setiap record adalah produk-produk dalam keranjang belanja seorang pelanggan. Data transaksi adalah koleksi dari himpunan-himpunan item, tetapi data tersebut dapat dipandang sebagai sekumpulan record yang memiliki field-field berupa atribut asimetrik. Seringkali atribut yang ada adalah atribut biner, yang menunjukkan apakah ada atau tidak item yang dibeli. Tetapi secara umum, atribut dapat berupa atribut diskret atau kontinu seperti banyaknya item yang dibeli atau banyaknya uang yang dibayarkan untuk item-item tersebut.
+
+- Data berbasis Graf
+
+Graf dapat digunakan dalam merepresentasikan data. Graf dapat menangkap hubungan antar objek data, atau objek data itu sendiri direpresentasikan dalam graf. Relasi antar objek seringkali menyampaikan informasi yang penting. Dalam kasus demikian, data seringkali direpresentasikan dalam bentuk graf. Secara khusus, objek data dipetakan ke node dari graf, sedangkan hubungan antar objek dinyatakan oleh link (arc) antar objek dan sifat-sifat link, seperti arah dan bobot. Sebagai contoh, struktur dari campuran bahan kimia dapat direpresentasikan oleh sebuah graf, dimana node adalah atom dan link antar node adalah ikatan bahan kimia.
+
+- Data Time Series
+
+Data time series adalah bentk khusus dari data sekuensial dimana setiap record adalah sebuah time series, yaitu sebuah rangkaian dari pengukuran yang diambil sepanjang waktu. Sebagai contoh, data set finansial dapat terdiri dari objek-objek yang merupakan time series dari harga harian dari berbagai stock.
+
+- Data Spasial
+
+Beberapa objek memiliki atribut-atribut spasial, seperti posisi atau area, juga tipe atribut lainnya. Salah satu contoh dari data spasial adalah data cuaca (curah hujan, temperatur, dan tekanan) yang dikumpulkan dari berbegai lokasi geografis. Sebagian besar algoritma data science dirancang untuk data record dan variasinya, seperti data transaksi dan matriks data. Teknik berorientasi record dapat diaplikasikan ke data bukan record dengan mengekstrak fitur-fitur dari objek data dan menggunakan fitur-fitur ini untuk membuat record yang terkait dengan setiap objek data. Perhatikan struktur bahan kimia yang dijelaskan sebelumnya. Diberikan sekumpulan substruktur, setiap campuran dapat direpresentasikan sebagai sebuah record dengan atribut biner yang menunjukkan apakah campuran mengandung substruktur tertentu ataukah tidak. Representasi demikian merupakan data set transaksi, dimana transaksi adalah campuran dan itemnya adalah substruktur.
+
+# 2. Tipe Atribut
+
+- Nominal (Kategorik) -> Kode pos, ID, Banyak karyawan
+- Ordinal (Kategorik) -> Kekerasan mineral {baik, lebih baik, sangat baik}, nomor jalan, grade
+- Interval (Numerik) -> Tanggal pada kalender, temperatur
+- Rasio (Numerik) -> Umur, panjang, arus listrik
+
+Contoh data:
+
+```{r eval = FALSE}
+# instal package
+install.packages("tidyverse")
+```
+
+
+```{r}
+# call package
+library(tidyverse)
+
+# set directory
+path_loc <- "D:/File/Bisa.AI/R"
+setwd(path_loc)
+
+# reading the data
+df <- read_csv("Dataset.csv")
+df
+```
+# 3. Handling the Missing Data
+
+Dari dataset tersebut, pada kolom Age dan Salary terdapat *missing data*. Sebelum mengimplementasikan model *machine learning* kita, masalah ini harus diselesaikan terlebih dahulu atau jika tidak akan menyebabkan masalah serius pada model *machine learning* kita. Terdapat 2 teknik yang digunakan untuk mengatasi *missing data*:
+- Hapus missing data
+Teknik ini cocok ketika berhadapan dengan kumpulan data besar dan dengan nilai yang sangat sedikit hilang yaitu menghapus satu baris dari kumpulan data dengan ribuan pengamatan tidak dapat mempengaruhi kualitas data. Ketika kumpulan data terdapat banyak nilai yang hilang, penggunaan teknik ini bisa sangat berbahaya. Menghapus banyak baris dari kumpulan data dapat menyebabkan hilangnya informasi penting yang terkandung dalam data.
+
+Contoh syntax:
+```{r}
+na.omit(df)
+```
+- Ganti *missing data* dengan suatu nilai
+
+Teknik ini adalah cara terbaik sejauh ini untuk menangani nilai-nilai yang hilang. Banyak ahli statistik menggunakan teknik ini daripada yang pertama. Nilai yang dapat diinputkan seperti *mean, median, modus* atau suatu nilai tertentu.
+
+Contoh syntax:
+```{r}
+df$Age <- ifelse(is.na(df$Age), 
+                      ave(df$Age, FUN = function(x) 
+                        mean(x, na.rm = TRUE)), 
+                      df$Age)
+df$Salary <- ifelse(is.na(df$Salary), 
+                      ave(df$Salary, FUN = function(x) 
+                        mean(x, na.rm = TRUE)), 
+                      df$Salary)
+df
+```
+# 4. Encoding Categorical Data
+
+Encoding mengacu pada transformasi data teks menjadi data numerik. Encoding data kategoris berarti kita mengubah data yang termasuk dalam kategori menjadi data numerik.
+
+Pada dataset kita, kolom Country merupakan data kategorik dengan 3 level (France, Spain, Germany). Kolom Purchased juga kategorik dengan 2 level (Yes, No)
+
+Machine learning model yang akan dibuat didasarkan pada persamaan matematis sehingga hanya membutuhkan angka saja dalam persamaan tersebut. Menyimpan teks dari variabel kategori dapat menyebabkan beberapa masalah pada pembuatan model. Ada beberapa encoding yang dapat dilakukan seperti Ordinal Encoding dan One Hot Encoding.
+
+## 4.1. Ordinal Encoding
+
+Untuk mengubah variabel kategori menjadi numerik, kita menggunakan fungsi `factor()`.
+
+Contoh syntax Ordinat Encoding:
+```{r}
+df$Country <- as.numeric(factor(df$Country, levels = unique(df$Country), exclude = NULL))
+df$Purchased <- as.numeric(factor(df$Purchased, levels = unique(df$Purchased), exclude = NULL))
+df
+```
+## 4.2. One Hot Encoding
+
+Untuk mengubah variabel kategori menjadi numerik, kita menggunakan package `mltools` dan `data.table` lalu kita panggil fungsi `one_hot()`.
+
+Contoh syntax One Hot Encoding:
+```{r eval=FALSE}
+install.packages("caret")
+```
+```{r}
+library(caret)
+data <- read_csv("Dataset.csv")
+
+dummies <- dummyVars(~., data = data)
+newdata <- data.frame(predict(dummies,newdata = data))
+newdata
+```
+# 5. Numerical Data
+
+Dalam data bertipe numerik, dapat dilakukan transformasi seperti normalisasi atau standarisasi. Pada metode ini kita akan menggunakan package `caret`.
+
+## 5.1. Normalisasi
+
+Normalisasi adalah proses penskalaan ulang rentang vektor data. Seperti membuat semua elemen berada di antara 0 dan 1.
+```{r}
+pp <- preProcess(df[,c(2:3)],method = c("range"),rangeBounds = c(0,1))
+predict(pp,df[,c(2:3)])
+```
+## 5.2. Standarisasi
+
+Suatu poses mentransformasikan data di sekitar pusat dan 0 dengan standar deviasi 1 penting ketika kita membandingkan pengukuran yang memiliki unit yang berbeda. Variabel yang diukur pada skala yang berbeda tidak memberikan kontribusi yang sama untuk analisis dan mungkin berakhir dengan menciptakan bias.
+```{r}
+pp1 <- preProcess(df[,c(2:3)],method = c("center","scale"))
+predict(pp1,df[,c(2:3)])
+```
+## 5.3. Transformasi Log
+
+Banyak algoritma *machine learning* membutuhkan variabel untuk didistribusikan secara normal. Namun, dalam skenario dunia nyata, data sering miring dan tidak menunjukkan distribusi normal. Salah satu teknik untuk mengatasi hal ini adalah dengan menerapkan transformasi logaritmik pada variabel.
+```{r}
+log(df[,c(2:3)])
+```
+## 5.4. Principal Component Analysis
+
+Ubah data menjadi komponen utama. Transformasi menjaga komponen di atas ambang varians `default=0.95` atau jumlah komponen dapat ditentukan `thresh`. Hasilnya adalah atribut yang tidak berkorelasi, berguna untuk algoritma seperti regresi linier atau generalized linear regression.
+```{r}
+data("iris")
+summary(iris)
+pp2 <- preProcess(iris,method=c("pca"),pcaComp = 3)
+
+#look the parameters
+print(pp2)
+
+#transform dataset using the parameters
+transformed <- predict(pp2,iris)
+summary(transformed)
+```
+# 6. Handling Duplicate Data
+
+Dalam data dunia nyata, kita sering menemukan banyak sekali data yang tidak bersih dan sangat sulit untuk dianalisis. Pada program R, perintah yang digunakan untuk mengatasinya dengan `duplicated()`. Perintah itu akan memberikan `TRUE` pada data ganda. Misalkan:
+```{r}
+# sample data
+x <- c(1,1,1,2,3,4,5,6,7,7,7,8)
+x
+
+# find duplicated data
+duplicated(x)
+
+# extract duplicate data
+x[duplicated(x)]
+
+# remove duplicated elements
+x[!duplicated(x)]
+
+```
+# 7. Handling Imbalanced Data
+
+Imbalanced data sering ditemukan dalam masalah klasifikasi, yang sering disebut imbalanced classification. Imbalanced classification adalah masalah *supervised learning* dimana satu kelas melebihi kelas lain dengan proporsi yang besar. Masalah ini lebih sering dihadapi dalam masalah klasifikasi biner daripada masalah klasifikasi multi-level. 
+
+Istilah tidak seimbang mengacu pada perbedaan yang dihadapi dalam variabel dependen (respon). Oleh karena itu, masalah klasifikasi tidak seimbang adalah masalah di mana variabel terikat memiliki proporsi kelas yang tidak seimbang. Dengan kata lain, kumpulan data yang menunjukkan distribusi yang tidak merata antara kelas-kelasnya dianggap tidak seimbang.
+
+Sebagai contoh: Pertimbangkan kumpulan data dengan 100.000 pengamatan. Kumpulan data ini terdiri dari kandidat yang melamar Magang di Harvard. Rupanya, harvard terkenal dengan tingkat penerimaannya yang sangat rendah. Variabel dependen mewakili apakah seorang kandidat telah terpilih (1) atau tidak terpilih (0). Setelah dilakukan analisa data, ternyata ~98% tidak lolos seleksi dan hanya ~2% yang beruntung. Ini adalah kasus sempurna dari klasifikasi tidak seimbang.
+
+Pada program R, kita akan menggunakan package `ROSE` untuk menangani kasus seperti ini.
+```{r eval=FALSE}
+install.packages("ROSE")
+```
+```{r}
+library(ROSE)
+
+# contoh data
+data(hacide)
+str(hacide.train)
+
+# check proportion
+table(hacide.train$cls)
+```
+## 7.1. Undersampling
+
+Metode ini bekerja dengan kelas mayoritas. Ini mengurangi jumlah pengamatan dari kelas mayoritas untuk membuat kumpulan data seimbang. Metode ini paling baik digunakan ketika kumpulan data sangat besar dan mengurangi jumlah sampel pelatihan membantu meningkatkan waktu proses dan masalah penyimpanan.
+
+Metode random undersampling memilih secara acak observasi dari kelas mayoritas yang dieliminasi sampai kumpulan data menjadi seimbang.
+
+Contoh kasus:
+```{r}
+und <- ovun.sample(cls~., data = hacide.train, method = "under")$data
+table(und$cls)
+```
+## 7.2. Oversampling
+
+Metode ini bekerja dengan kelas minoritas. Ini mereplikasi pengamatan dari kelas minoritas untuk menyeimbangkan data. Ini juga dikenal sebagai upsampling.Oversampling acak menyeimbangkan data dengan melakukan oversampling kelas minoritas secara acak.
+
+Contoh kasus:
+```{r}
+ovr <- ovun.sample(cls~., data = hacide.train, method = "over")$data
+table(ovr$cls)
+```
+# 8. Splitting the Dataset
+
+Pada *machine learning*, kita membagi data menjadi 2 bagian:
+- Training set: bagian yang digunakan untuk membuat model
+- Test set: bagian yang digunakan untuk melihat performance dari model kita
+
+Alasan kita membagi data ini adalah untuk memastikan bahwa model pembelajaran mesin kita tidak mempelajari korelasi data yang dilatihnya. Jika kita membiarkannya belajar terlalu banyak pada data, itu mungkin berkinerja buruk saat diuji pada kumpulan data baru dengan korelasi yang berbeda.
+
+Oleh karena itu, setiap kali kita membangun model pembelajaran mesin, idenya adalah untuk mengimplementasikannya di training set dan mengevaluasinya di test set. Kita berharap kinerja dalam training set dan test set berbeda dan jika ini masalahnya, model dapat beradaptasi dengan himpunan data baru.
+
+Untuk memulainya, pertama-tama kita memuat package yang diperlukan.
+```{r eval=FALSE}
+install.packages("caTools")
+```
+```{r}
+library(caTools)
+set.seed(100)
+split = sample.split(df$Purchased, SplitRatio = 0.8)
+
+# create the training set and test set
+training_set = subset(df, split == TRUE)
+test_set = subset(df, split == FALSE)
+training_set
+test_set
+```
+
+
+<p style="text-align:right;">Arranged by: Aditya Wisnugraha Sugiyarto S.Si.</p>

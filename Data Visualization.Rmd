@@ -1,0 +1,632 @@
+---
+title: "Data Visualization"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: 
+      collapsed: false
+---
+
+Visualisasi data merupakan suatu cara untuk menampilkan atau mengkomunikasikan data agar lebih mudah dipahami. Visualisasi data memiliki perananan penting dalam berbagai bidang. Pengambilan keputusan akan lebih mudah ditentukan ketika melihat hubungan antar variabel data atau melihat pola pada data yang divisualisasikan.
+
+Secara umum, memilih tipe visualisasi yang cocok bergantung pada tipe data yang dimiliki. Jika memiliki data bertipe kategorikal tentu akan berbeda visualisasinya dengan data bertipe numerik, begitu pula jika data bertipe time series ataupun spasial.
+
+Namun, dalam melakukan visualisasi data di R kita menggunakan package yang sama yaitu `ggplot2`. Sebelum mempelajari lebih lanjut, kita instal terlebih dahulu package nya.
+```{r eval=FALSE}
+install.packages("ggplot2")
+install.packages("mosaicData")           # untuk load data sample
+install.packages("dplyr")                # untuk rekayasa dataframe
+```
+```{r}
+# panggil package
+library(ggplot2)
+library(dplyr)
+
+# load data sample
+data(CPS85 , package = "mosaicData")
+```
+
+# 1. Introduction
+
+## 1.1. ggplot
+
+Fungsi pertama pada pembuatan grafik adalah `ggplot` yang berfungsi:
+- mendeklarasikan dataset yang ingin diplot
+- memetakan variabel yang ingin diplot (pemetaan dilakukan pada fungsi `aes`)
+```{r}
+ggplot(data = CPS85, mapping = aes(x = exper, y = wage))
+```
+
+## 1.2. Geom
+
+Lalu, dalam pembuatan plot kita menggunakan fungsi `geom_` atau *geometric objects* dan diikuti keterangan plot yang ingin dibuat seperti `points, lines, bars, dll.`. Sebagai contoh jika ingin membuat plot titik:
+```{r}
+ggplot(data = CPS85, mapping = aes(x = exper, y = wage)) + geom_point(colour = "cornflowerblue")
+```
+Dengan `geom_` ini kita dapat membuat beberapa tipe plot lain dalam satu figure. Sebagai contoh:
+```{r}
+ggplot(data = CPS85, mapping = aes(x = exper, y = wage)) + geom_point(colour = "cornflowerblue") + geom_smooth()
+```
+
+## 1.3. Grouping
+
+Sebagai tambahan jika ingin membuat plot xy, perbedaan nilai dalam suatu variabel dapat digunakan sebagai ukuran, warna, atau bentuk pada *geometric objects*. Sebagai contoh:
+```{r}
+ggplot(data = CPS85, mapping = aes(x = exper, y = wage, color=sex)) + 
+  geom_point(size = 3) + 
+  geom_smooth()
+```
+
+## 1.4. Scale
+
+Scale digunakan untuk mengontrol bagaimana variabel akan divisualisasikan. Fungsi scale digunakan dengan awalan `scale_`. Perhatikan contoh berikut:
+```{r}
+ggplot(data = CPS85, mapping = aes(x = exper, y = wage, color=sex)) + 
+  geom_point(size = 3) + 
+  geom_smooth() +
+  scale_x_continuous(breaks = seq(0,60,10)) +
+  scale_y_continuous(breaks = seq(0,30,5), label = scales::dollar) +
+  scale_color_manual(values = c("red","blue"))
+```
+
+## 1.5. Facets
+
+Facets mereproduksi grafik untuk setiap tingkat variabel tertentu (atau kombinasi variabel). Facet dibuat menggunakan fungsi yang dimulai dengan `facet_`. Di sini, facets akan ditentukan oleh delapan tingkat variabel sektor.
+```{r}
+ggplot(data = CPS85, mapping = aes(x = exper, y = wage, color=sex)) + 
+  geom_point(size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_x_continuous(breaks = seq(0,60,10)) +
+  scale_y_continuous(breaks = seq(0,30,5), label = scales::dollar) +
+  scale_color_manual(values = c("red","blue")) +
+  facet_wrap(~sector)
+```
+
+## 1.6. Label
+
+Grafik harus mudah diinterpretasikan dan label yang informatif merupakan elemen kunci dalam mencapai tujuan ini. Fungsi `labs` menyediakan label khusus untuk sumbu dan legenda. Selain itu, judul, subjudul, dan keterangan khusus dapat ditambahkan.
+```{r}
+ggplot(data = CPS85, mapping = aes(x = exper, y = wage, color=sex)) + 
+  geom_point(size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_x_continuous(breaks = seq(0,60,10)) +
+  scale_y_continuous(breaks = seq(0,30,5), label = scales::dollar) +
+  scale_color_manual(values = c("red","blue")) +
+  facet_wrap(~sector) +
+  labs(title = "Relationship between wages and experience",
+       subtitle = "Current Population Survey",
+       caption = "source: http://mosaic-web.org/",
+       x = " Years of Experience",
+       y = "Hourly Wage",
+       color = "Gender")
+```
+
+## 1.7. Themes
+
+Terakhir, kita dapat menyempurnakan tampilan grafik menggunakan tema. Fungsi tema (yang dimulai dengan `theme_`) mengontrol warna latar belakang, font, garis kisi, penempatan legenda, dan fitur grafik lainnya yang tidak terkait dengan data. Mari gunakan tema yang lebih bersih.
+```{r}
+ggplot(data = CPS85, mapping = aes(x = exper, y = wage, color=sex)) + 
+  geom_point(size = 3) + 
+  geom_smooth(method = "lm", se = FALSE) +
+  scale_x_continuous(breaks = seq(0,60,10)) +
+  scale_y_continuous(breaks = seq(0,30,5), label = scales::dollar) +
+  scale_color_manual(values = c("red","blue")) +
+  facet_wrap(~sector) +
+  labs(title = "Relationship between wages and experience",
+       subtitle = "Current Population Survey",
+       caption = "source: http://mosaic-web.org/",
+       x = " Years of Experience",
+       y = "Hourly Wage",
+       color = "Gender") +
+  theme_minimal()
+```
+
+# 2. Univariate
+
+Dalam hal visualisasi data, data berupa categorical tentu berbeda dengan visualisasi data berupa numerical. Beberapa contoh yang dapat dilakukan jika data bertipe categorical ialah: bar chart, pie chart, tree adapun jika numerical adalah: histogram, density plot, dot chart.
+
+## 2.1. Categorical
+
+### Bar Chart
+
+```{r}
+# load data sample
+data(Marriage, package ="mosaicData")
+
+# plot distribution
+ggplot(Marriage, aes(x = race)) +
+  geom_bar(color = "black", fill ="pink") +
+  labs(x = "Race", 
+       y = "Frequency", 
+       title = "Participants by race")
+```
+
+### Pie Chart
+
+Jika tujuan Anda adalah membandingkan frekuensi kategori, Anda lebih baik menggunakan diagram batang (manusia lebih baik dalam menilai panjang batang daripada volume pie chart). Jika tujuan Anda adalah membandingkan setiap kategori dengan keseluruhan (misalnya, berapa porsi peserta yang Hispanik dibandingkan dengan semua peserta), dan jumlah kategorinya kecil, maka diagram lingkaran mungkin cocok untuk Anda. Dibutuhkan sedikit lebih banyak kode untuk membuat diagram lingkaran yang menarik di R.
+```{r}
+plotdata <- Marriage %>%
+  count(race) %>%
+  arrange(desc(race)) %>%
+  mutate(prop = round(n*100/sum(n), 1),
+         lab.ypos = cumsum(prop) - 0.5*prop)
+
+plotdata$label <- paste0(plotdata$race, "\n",
+                         round(plotdata$prop), "%")
+
+ggplot(plotdata, 
+       aes(x = "", 
+           y = prop, 
+           fill = race)) +
+  geom_bar(width = 1, 
+           stat = "identity", 
+           color = "black") +
+  geom_text(aes(y = lab.ypos, label = label), 
+            color = "black") +
+  coord_polar("y", 
+              start = 0, 
+              direction = -1) +
+  theme_void() +
+  theme(legend.position = "FALSE") +
+  labs(title = "Participants by race")
+```
+
+### Tree Map
+
+Alternatif dari pie chart adalah tree map. Tidak seperti tree map, ini dapat menangani variabel yang mempunyai banyak tingkatan.
+```{r eval=FALSE}
+install.packages("treemapify")
+```
+```{r}
+library(treemapify)
+
+plotdata <- Marriage %>%
+  count(officialTitle)
+
+ggplot(plotdata, 
+       aes(fill = officialTitle, 
+           area = n, 
+           label = officialTitle)) +
+  geom_treemap() + 
+  geom_treemap_text(colour = "white", 
+                    place = "centre") +
+  labs(title = "Marriages by officiate") +
+  theme(legend.position = "none")
+```
+
+## 2.2. Numerical
+
+Visualisasi grafik untuk data bertipe numerik, seperti histogram, density plot, atau dot plot.
+
+### Histogram
+
+```{r}
+# plot the age distribution using a histogram
+ggplot(Marriage, aes(x = age)) +
+  geom_histogram() + 
+  labs(title = "Participants by age",
+       x = "Age")
+```
+
+### Density Plot
+
+Alternatif dari histogram adalah density plot. Secara teknis, density plot merupakan metode nonparametrik untuk mengestimasi fungsi densitas probabilitas dari variabel acak kontinu. Pada dasarnya, kita mencoba menggambar histogram yang dihaluskan, di mana area di bawah kurva sama dengan satu.
+```{r}
+# Create a kernel density plot of age
+ggplot(Marriage, aes(x = age)) +
+  geom_density(fill = "deepskyblue") + 
+  labs(title = "Participants by age")
+```
+
+### Dot Chart
+
+Alternatif lain dari histogram adalah dot chart.
+```{r}
+# Plot ages as a dot plot using 
+# gold dots with black borders
+ggplot(Marriage, aes(x = age)) +
+  geom_dotplot(fill = "gold", 
+               color = "black") + 
+  labs(title = "Participants by age",
+       y = "Proportion",
+       x = "Age")
+```
+
+# 3. Bivariate
+
+## 3.1. Categorical vs Categorical
+
+Ketika plot antara 2 variabel kategorik, stacked, grouped, atau segmented bar yang biasanya digunakan. Sebagai contoh:
+```{r}
+# stacked bar chart
+ggplot(mpg, 
+       aes(x = class, 
+           fill = drv)) + 
+  geom_bar(position = "stack")
+
+# grouped bar plot
+ggplot(mpg, 
+       aes(x = class, 
+           fill = drv)) + 
+  geom_bar(position = "dodge")
+```
+
+## 3.2. Numerical vs Numerical
+
+Hubungan antara 2 variabel numerik biasanya digambarkan dengan scatter plot dan line plot.
+
+### Scatter Plot
+
+```{r eval=FALSE}
+# instal package which contain sample dataset
+install.packages("carData")
+```
+```{r}
+# load dataset
+data(Salaries, package="carData")
+
+ggplot(Salaries, 
+       aes(x = yrs.since.phd, 
+           y = salary)) +
+  geom_point(color="cornflowerblue", 
+             size = 2, 
+             alpha=.8) +
+  scale_y_continuous(label = scales::dollar, 
+                     limits = c(50000, 250000)) +
+  scale_x_continuous(breaks = seq(0, 60, 10), 
+                     limits=c(0, 60)) + 
+  labs(x = "Years Since PhD",
+       y = "",
+       title = "Experience vs. Salary",
+       subtitle = "9-month salary for 2008-2009")
+```
+
+### Line Plot
+
+```{r eval=FALSE}
+# instal package which contain sample dataset
+install.packages("gapminder")
+```
+```{r}
+data(gapminder, package="gapminder")
+plotdata <- filter(gapminder, 
+                   country == "United States")
+
+ggplot(plotdata, 
+       aes(x = year, 
+           y = lifeExp)) +
+  geom_line(size = 1.5, 
+            color = "lightgrey") +
+  geom_point(size = 3, 
+             color = "steelblue") +
+  labs(y = "Life Expectancy (years)", 
+       x = "Year",
+       title = "Life expectancy changes over time",
+       subtitle = "United States (1952-2007)",
+       caption = "Source: http://www.gapminder.org/data/")
+```
+
+## 3.3. Categorical vs Numerical
+
+Ketika ingin melihat hubungan antara variabel kategorik dan variabel numerik. Terdapat beberapa pilihan yang dapat dilakukan seperti bar chart, density plot, box plot, violin plot, mean/sem plot, ridgeline plot dan Cleveland plot.
+
+### Bar chart
+
+```{r}
+plotdata <- Salaries %>%
+  group_by(rank) %>%
+  summarize(mean_salary = mean(salary))
+
+
+# plot mean salaries
+ggplot(plotdata, 
+       aes(x = rank, 
+           y = mean_salary)) +
+  geom_bar(stat = "identity")
+```
+
+### Density Plot
+
+```{r}
+ggplot(Salaries, 
+       aes(x = salary, 
+           fill = rank)) +
+  geom_density(alpha = 0.4) +
+  labs(title = "Salary distribution by rank")
+```
+
+### Box Plot
+
+```{r}
+# plot the distribution of salaries by rank using boxplots
+ggplot(Salaries, 
+       aes(x = rank, 
+           y = salary)) +
+  geom_boxplot() +
+  labs(title = "Salary distribution by rank")
+```
+
+### Violin Plot
+
+```{r}
+# plot the distribution using violin and boxplots
+ggplot(Salaries, 
+       aes(x = rank, 
+           y = salary)) +
+  geom_violin(fill = "cornflowerblue") +
+  geom_boxplot(width = .2, 
+               fill = "orange",
+               outlier.color = "orange",
+               outlier.size = 2) + 
+  labs(title = "Salary distribution by rank")
+```
+
+### Ridgeline plot
+
+```{r eval=FALSE}
+install.packages("ggridges")
+```
+```{r}
+library(ggridges)
+
+ggplot(mpg, 
+       aes(x = cty, 
+           y = class, 
+           fill = class)) +
+  geom_density_ridges() + 
+  theme_ridges() +
+  labs("Highway mileage by auto class") +
+  theme(legend.position = "none")
+```
+
+### Mean / SEM plot
+
+```{r}
+# calculate means and standard errors by rank and sex
+plotdata <- Salaries %>%
+  group_by(rank, sex) %>%
+  summarize(n = n(),
+            mean = mean(salary),
+            sd = sd(salary),
+            se = sd/sqrt(n))
+
+# plot the means and standard errors by sex
+ggplot(plotdata, aes(x = rank,
+                     y = mean, 
+                     group=sex, 
+                     color=sex)) +
+  geom_point(size = 3) +
+  geom_line(size = 1) +
+  geom_errorbar(aes(ymin  =mean - se, 
+                    ymax = mean+se), 
+                width = .1)
+```
+
+### Strip Plot
+
+```{r}
+# plot the distribution of salaries
+# by rank using jittering
+ggplot(Salaries, 
+       aes(y = rank, 
+           x = salary)) +
+  geom_jitter() + 
+  labs(title = "Salary distribution by rank")
+```
+
+### Swarm Plot
+
+```{r eval=FALSE}
+# instal package ggbeeswarm
+install.packages("ggbeeswarm")
+```
+```{r}
+# plot the distribution of salaries 
+# by rank using beewarm-syle plots
+library(ggbeeswarm)
+library(scales)
+ggplot(Salaries, 
+       aes(x = factor(rank,
+                      labels = c("Assistant\nProfessor",
+                                 "Associate\nProfessor",
+                                 "Full\nProfessor")), 
+           y = salary, 
+           color = rank)) +
+  geom_quasirandom(alpha = 0.7,
+                   size = 1.5) + 
+  scale_y_continuous(label = dollar) +
+  labs(title = "Academic Salary by Rank", 
+       subtitle = "9-month salary for 2008-2009",
+       x = "",
+       y = "") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+### Cleveland Dot Charts
+
+```{r}
+# Fancy Cleveland plot
+plotdata <- gapminder %>%
+  filter(continent == "Asia" & 
+         year == 2007)
+
+ggplot(plotdata, 
+       aes(x=lifeExp, 
+           y=reorder(country, lifeExp))) +
+  geom_point(color="blue", 
+             size = 2) +
+  geom_segment(aes(x = 40, 
+               xend = lifeExp, 
+               y = reorder(country, lifeExp), 
+               yend = reorder(country, lifeExp)),
+               color = "lightgrey") +
+  labs (x = "Life Expectancy (years)",
+        y = "",
+        title = "Life Expectancy by Country",
+        subtitle = "GapMinder data for Asia - 2007") +
+  theme_minimal() + 
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank())
+```
+
+# 4. Multivariate
+
+Grafik multivariat memperlihatkan hubungan antara 3 atau lebih variabel. Terdapat 2 metode yang biasa dipakai untuk melihat analisis multi variabel seperti grouping dan faceting.
+
+## 4.1. Grouping
+
+Grouping memungkinkan Anda untuk memplot beberapa variabel dalam satu grafik, menggunakan karakteristik visual seperti warna, bentuk, dan ukuran.
+```{r}
+data(Salaries, package="carData")
+
+# plot experience vs. salary 
+# (color represents rank and size represents service)
+ggplot(Salaries, 
+       aes(x = yrs.since.phd, 
+           y = salary, 
+           color = rank, 
+           size = yrs.service)) +
+  geom_point(alpha = .6) +
+  labs(title = "Academic salary by rank, years of service, and years since degree")
+```
+
+## 4.2. Faceting
+
+Dalam faceting, grafik terdiri dari beberapa plot terpisah atau kelipatan kecil, satu untuk setiap tingkat variabel ketiga, atau kombinasi variabel. Paling mudah untuk memahami ini dengan sebuah contoh.
+```{r}
+# plot salary histograms by rank and sex
+ggplot(Salaries, aes(x = salary / 1000)) +
+  geom_histogram(color = "white",
+                 fill = "cornflowerblue") +
+  facet_grid(sex ~ rank) +
+  labs(title = "Salary histograms by sex and rank",
+       x = "Salary ($1000)")
+```
+
+# 5. Statistical Analysis
+
+Selain visualisasi menggunakan grafik, sebelum melakukan proses pemodelan perlu dilakukannya analisis statistik. Analisis tersebut seperti melihat korelasinya atau melihat hubungan antara 2 variabel menggunakan regresi linier atau regresi logistik.
+
+## 5.1. Correlation plot
+
+```{r}
+# load dataset
+data(SaratogaHouses, package="mosaicData")
+
+# select numeric variables
+df <- dplyr::select_if(SaratogaHouses, is.numeric)
+
+# calulate the correlations
+r <- cor(df, use="complete.obs")
+```
+```{r eval=FALSE}
+install.packages("ggcorrplot")
+```
+```{r}
+library(ggcorrplot)
+ggcorrplot(r, lab = TRUE)
+```
+
+## 5.2. Linear Regression
+
+```{r eval=FALSE}
+# instal package
+install.packages("visreg")
+```
+```{r}
+data(SaratogaHouses, package="mosaicData")
+houses_lm <- lm(price ~ lotSize + age + landValue +
+                  livingArea + bedrooms + bathrooms +
+                  waterfront, 
+                data = SaratogaHouses)
+```
+Contoh syntax untuk melihat hubungan `livingArea` dengan `price`:
+```{r}
+library(visreg)
+visreg(houses_lm, "livingArea", gg = TRUE) 
+```
+
+## 5.3. Logistic Regression
+
+```{r}
+data(CPS85, package = "mosaicData")
+cps85_glm <- glm(married ~ sex + age + race + sector, 
+                 family="binomial", 
+                 data=CPS85)
+
+visreg(cps85_glm, "age", 
+       gg = TRUE, 
+       scale="response") +
+  labs(y = "Prob(Married)", 
+       x = "Age",
+       title = "Relationship of age and marital status",
+       subtitle = "controlling for sex, race, and job sector",
+       caption = "source: Current Population Survey 1985")
+```
+
+# 6. Visualisasi Lainnya
+
+## 6.1. 3D ScatterPlot
+
+```{r eval=FALSE}
+install.packages("scatterplot3d")
+```
+```{r}
+# basic 3-D scatterplot
+library(scatterplot3d)
+with(mtcars, {
+   scatterplot3d(x = disp,
+                 y = wt, 
+                 z = mpg,
+                 main="3-D Scatterplot Example 1")
+})
+```
+
+## 6.2. HeatMap
+
+```{r eval=FALSE}
+install.packages("superheat")
+```
+```{r}
+data(mtcars)
+library(superheat)
+superheat(mtcars, scale = TRUE)
+```
+
+## 6.3. Scatterplot Matrix
+
+```{r eval=FALSE}
+install.packages("GGally")
+```
+```{r}
+library(GGally)
+
+# prepare data
+data(msleep, package="ggplot2")
+library(dplyr)
+df <- msleep %>% 
+  mutate(log_brainwt = log(brainwt),
+         log_bodywt = log(bodywt)) %>%
+  select(log_brainwt, log_bodywt, sleep_total, sleep_rem)
+ 
+
+# create a scatterplot matrix
+ggpairs(df)
+```
+
+## 6.4. Wordcloud
+
+```{r eval=FALSE}
+# install packages for text mining
+install.packages(c("tm", "SnowballC", "wordcloud", "RColorBrewer", "RCurl", "XML", "Rcpp"))
+```
+```{r}
+source('http://www.sthda.com/upload/rquery_wordcloud.r')
+filePath <- "http://www.sthda.com/sthda/RDoc/example-files/martin-luther-king-i-have-a-dream-speech.txt"
+res<-rquery.wordcloud(filePath, type ="file", lang = "english")
+```
+
+
+<p style="text-align:right;">Arranged by: Aditya Wisnugraha Sugiyarto S.Si.</p>

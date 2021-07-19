@@ -1,0 +1,409 @@
+---
+title: "Machine Learning Using R"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: 
+      collapsed: false
+    df_print: paged
+---
+
+# 1. Introduction
+
+Machine learning adalah salah satu disiplin ilmu dari Computer Science yang mempelajari bagaimana membuat komputer/mesin itu mempunyai suatu kecerdasan. Agar mempunyai suatu kecerdasan komputer/mesin harus dapat belajar. Dengan kata lain, Machine learning adalah suatu bidang keilmuan yang berisi tentang pembelajaran komputer/mesin untuk menjadi cerdas.
+
+Dalam perkembangan machine learning saat ini secara garis besar terdapat 2 algoritma pembelajaran yaitu supervised learning (pembelajaran terarah) dan unsupervised learning (pembelajaran tidak terarah).
+
+![](image/ML1.png)
+
+Jika supervised learning dalam pembuatan model menggunakan data input (prediktor) dan output (respon), unsupervised learning akan membuat model hanya berdasarkan kemiripan datanya. Contoh kasus yang dapat diselesaikan dengan supervised learning yaitu klasifikasi dan regresi sedangkan untuk unsupervised learning adalah clustering atau pemetaan.
+
+**Clustering** merupakan proses partisi satu set objek data ke dalam himpunan bagian yang disebut dengan cluster. Objek yang di dalam cluster memiliki kemiripan karakteristik antar satu sama lainnya dan berbeda dengan cluster yang lain. Partisi tidak dilakukan secara manual melainkan dengan suatu algoritma clustering. Oleh karena itu, clustering sangat berguna dan bisa menemukan group atau kelompokyang tidak dikenal dalam data. Clustering banyak digunakan dalam berbagai aplikasi seperti misalnya pada business inteligence, pengenalan pola citra, web search, bidang ilmu biologi, dan untuk keamanan (security). Di dalam business inteligence, clustering bisa mengatur banyak customer ke dalam banyaknya kelompok. Contohnya mengelompokan customer ke dalam beberapa cluster dengan kesamaan karakteristik yang kuat. Clustering juga dikenal sebagai data segmentasi karena clustering mempartisi banyak data set ke dalam banyak group berdasarkan kesamaannya. Selain itu clustering juga bisa sebagai outlier detection. Beberapa contoh algoritma yang dapat diterapkan:
+
+![](image/clustering.png)
+
+**Regresi** adalah salah satu metode untuk menentukan hubungan sebab-akibat antara variabel dengan variabel lainnya. Dalam analisis regresi sederhana, hubungan antara variabel bersifat linier, di mana perubahan pada variabel X akan diikuti oleh perubahan pada variabel secara tetap. Sedangkan dalam hubungan nonlinier, perubahan X tidak diikuti dengan perubahan variabel Y secara proporsional. metode analisis regresi digunakan untuk menghasilkan hubungan antara dua variabel atau lebih dalam bentuk numerik. Dalam pembuatan model inilah diperlukan adanya variabel input (prediktor) dan output (respon). 
+
+Sedangkan, tujuan dari proses **klasifikasi** ini mirip dengan clustering yaitu kita ingin membagi dataset ke dalam beberapa kelompok. Namun yang membuatnya berbeda adalah, dalam klasifikasi kita memberi tahu kepada mesin (algoritma) kita pembagian kelompoknya, atau dengan kata lain kita mengajari mesin cara membagi kelompoknya. Sedangkan pada clustering, kita tidak mengajarkan mesin, namun ia yang akan melakukan pengelompokan dengan sendirinya. Dalam machine learning regresi dan klasifikasi memiliki kemiripan metode karena jika kita bermain di regresi variabel output yang kita gunakan bertipe numerik sedangkan jika kita ingin mengolah klasifikasi variabel output yang digunakan ialah ordinal atau nominal (kategorikal). Beberapa algoritma yang dapat digunakan ialah:
+
+![](image/regresi.png)
+
+# 2. Supervised Learning
+
+## 2.1. Linear Regression
+
+Regresi linier, pokok dari pemodelan statistik klasik, adalah salah satu algoritma paling sederhana untuk melakukan pembelajaran terawasi. Meskipun mungkin tampak agak membosankan dibandingkan dengan beberapa pendekatan pembelajaran statistik yang lebih modern yang dijelaskan dalam bab-bab selanjutnya, regresi linier masih merupakan metode pembelajaran statistik yang berguna dan diterapkan secara luas. Selain itu, ini berfungsi sebagai titik awal yang baik untuk pendekatan yang lebih maju. Akibatnya, penting untuk memiliki pemahaman yang baik tentang regresi linier sebelum mempelajari metode pembelajaran yang lebih kompleks.
+```{r}
+data(SaratogaHouses, package="mosaicData")
+houses_lm <- lm(price ~ lotSize + age + landValue +
+                  livingArea + bedrooms + bathrooms +
+                  waterfront, 
+                data = SaratogaHouses)
+summary(houses_lm)
+```
+Visualisasi:
+```{r}
+library(ggplot2)
+library(visreg)
+visreg(houses_lm, "livingArea", gg = TRUE) 
+```
+
+## 2.2. Logistic Regression
+
+Regresi linier digunakan untuk memperkirakan hubungan (linier) antara variabel respons kontinu dan serangkaian variabel prediktor. Namun, ketika variabel respon adalah biner (yaitu, Ya/Tidak), regresi linier tidak sesuai. Untungnya, analis dapat beralih ke metode analog, regresi logistik, yang mirip dengan regresi linier dalam banyak hal. Regresi logistik dapat diperluas untuk masalah multinomial.
+```{r}
+data(CPS85, package = "mosaicData")
+cps85_glm <- glm(married ~ sex + age + race + sector, 
+                 family="binomial", 
+                 data=CPS85)
+
+visreg(cps85_glm, "age", 
+       gg = TRUE, 
+       scale="response") +
+  labs(y = "Prob(Married)", 
+       x = "Age",
+       title = "Relationship of age and marital status",
+       subtitle = "controlling for sex, race, and job sector",
+       caption = "source: Current Population Survey 1985")
+```
+
+## 2.3. K-Nearest Neighbor
+
+K-nearest neighbor (KNN) adalah algoritma yang sangat sederhana di mana setiap pengamatan diprediksi berdasarkan "kemiripannya" dengan pengamatan lainnya.
+```{r}
+data(iris)
+head(iris)
+
+# Generate a random number that is 90% of the total number of rows in dataset.
+ran <- sample(1:nrow(iris), 0.9 * nrow(iris)) 
+
+# the normalization function is created
+nor <-function(x) { (x -min(x))/(max(x)-min(x))   }
+
+# Run nomalization on first 4 coulumns of dataset because they are the predictors
+iris_norm <- as.data.frame(lapply(iris[,c(1,2,3,4)], nor))
+
+summary(iris_norm)
+
+# extract training set
+iris_train <- iris_norm[ran,] 
+# extract testing set
+iris_test <- iris_norm[-ran,] 
+# extract 5th column of train dataset because it will be used as 'cl' argument in knn function.
+iris_target_category <- iris[ran,5]
+# extract 5th column if test dataset to measure the accuracy
+iris_test_category <- iris[-ran,5]
+# load the package class
+library(class)
+# run knn function
+pr <- knn(iris_train,iris_test,cl=iris_target_category,k=13)
+
+##create confusion matrix
+tab <- table(pr,iris_test_category)
+```
+
+Visualisasi:
+```{r}
+kelas <- pr
+ggplot(iris_test,
+       aes(x=iris_test$Sepal.Length,
+           y=iris_test$Sepal.Width,
+           color = kelas)) +
+  geom_point(alpha = .6, size = 5) +
+  labs(title = "Hasil KNN")
+```
+
+## 2.4. Decision Tree
+
+Model berbasis pohon adalah kelas algoritma nonparametrik yang bekerja dengan mempartisi ruang fitur menjadi sejumlah wilayah yang lebih kecil (tidak tumpang tindih) dengan nilai respons serupa menggunakan seperangkat aturan pemisahan. Prediksi diperoleh dengan memasang model yang lebih sederhana (misalnya, konstanta seperti nilai respons rata-rata) di setiap wilayah. Metode membagi-dan-menaklukkan seperti itu dapat menghasilkan aturan sederhana yang mudah ditafsirkan dan divisualisasikan dengan diagram pohon. Seperti yang akan kita lihat, *decision tree* menawarkan banyak manfaat; namun, mereka biasanya kurang dalam kinerja prediktif dibandingkan dengan algoritma yang lebih kompleks seperti jaringan saraf dan MARS.
+```{r}
+library(rpart)
+fit <- rpart(Species~., data = iris, method = 'class')
+```
+Visualisasi:
+```{r}
+library(rpart.plot)
+rpart.plot(fit,extra = 106)
+```
+
+## 2.5. Random Forest
+
+*Random forest* adalah modifikasi dari *bagged decisiont tree* yang membangun kumpulan besar pohon yang tidak berkorelasi untuk lebih meningkatkan kinerja prediktif. Mereka telah menjadi algoritma pembelajaran "out-of-the-box" atau "off-the-shelf" yang sangat populer yang menikmati kinerja prediktif yang baik dengan penyetelan hyperparameter yang relatif sedikit.
+```{r eval= FALSE}
+install.packages("randomForest")
+```
+```{r}
+library(randomForest)
+
+# split train test
+set.seed(100)
+train <- sample(nrow(iris), 0.7*nrow(iris), replace = FALSE)
+TrainSet <- iris[train,]
+TestSet <- iris[-train,]
+
+# build model
+model <- randomForest(Species~., data = TrainSet, importance = TRUE)
+model
+
+# predict TestSet
+predTrain <- predict(model, TestSet, type = "class")
+table(predTrain, TestSet$Species)
+```
+Visualisasi data:
+```{r}
+kelas <- predTrain
+ggplot(TestSet,
+       aes(x=TestSet$Sepal.Length,
+           y=TestSet$Sepal.Width,
+           color = kelas)) +
+  geom_point(alpha = .6, size = 5) +
+  labs(title = "Hasil Random Forest")
+```
+
+## 2.6. Support Vector Machine
+
+*Support vector machines* (SVM) menawarkan pendekatan langsung ke klasifikasi biner: coba temukan hyperplane di beberapa ruang fitur yang "terbaik" memisahkan dua kelas. Namun, dalam praktiknya, sulit (jika bukan tidak mungkin) untuk menemukan hyperplane untuk memisahkan kelas secara sempurna hanya dengan menggunakan fitur aslinya. SVM mengatasi hal ini dengan memperluas gagasan untuk menemukan hyperplane pemisah dalam dua cara: (1) melonggarkan apa yang kami maksud dengan “pemisahan sempurna”, dan (2) menggunakan apa yang disebut trik kernel untuk memperbesar ruang fitur ke titik yang sempurna. pemisahan kelas (lebih) mungkin.
+```{r eval=FALSE}
+install.packages("e1071")
+```
+```{r}
+library(e1071)
+svmfit <- svm(Species~., data = TrainSet, kernel= "radial")
+ypred <- predict(svmfit, TestSet)
+table(ypred,TestSet$Species)
+```
+Visualisasi:
+```{r}
+kelas <- ypred
+ggplot(TestSet,
+       aes(x=TestSet$Sepal.Length,
+           y=TestSet$Sepal.Width,
+           color = kelas)) +
+  geom_point(alpha = .6, size = 5) +
+  labs(title = "Hasil SVM")
+```
+
+## 2.7. Neural Network
+
+
+
+```{r eval=FALSE}
+install.packages("keras")
+install.packages("mlbench")
+```
+```{r}
+library(keras)
+library(mlbench)
+library(dplyr)
+library(magrittr)
+
+data("BostonHousing", package = "mlbench")
+data <- BostonHousing
+
+data %<>% mutate_if(is.factor, as.numeric)
+
+data <- as.matrix(data)
+dimnames(data) <- NULL
+
+# partisi
+set.seed(123)
+ind <- sample(2, nrow(data), replace = T, prob = c(.7, .3))
+training <- data[ind==1,1:13]
+test <- data[ind==2, 1:13]
+trainingtarget <- data[ind==1, 14]
+testtarget <- data[ind==2, 14]
+
+# scaling
+m <- colMeans(training)
+s <- apply(training, 2, sd)
+training <- scale(training, center = m, scale = s)
+test <- scale(test, center = m, scale = s)
+
+# model building
+model <- keras_model_sequential()
+model %>%
+         layer_dense(units = 5, activation = 'relu', input_shape = c(13)) %>%
+         layer_dense(units = 1)
+
+# compilation
+model %>% compile(loss = 'mse',
+optimizer = 'rmsprop', 
+metrics = 'mae') 
+
+# fitting
+mymodel <- model %>%          
+fit(training,trainingtarget,
+             epochs = 100,
+             batch_size = 32,
+             validation_data = list(test,testtarget))
+
+# predict
+model %>% evaluate(test, testtarget)
+pred <- model %>% predict(test)
+
+#visualisasi
+plot(testtarget, pred)
+```
+
+# 3. Unsupervised Learning
+
+## 3.1. K-Means
+
+Clustering adalah seperangkat teknik yang luas untuk menemukan subkelompok pengamatan dalam kumpulan data. Ketika kita mengelompokkan pengamatan, kita ingin pengamatan dalam kelompok yang sama menjadi serupa dan pengamatan dalam kelompok yang berbeda menjadi berbeda. Karena tidak ada variabel respons, ini adalah metode *unsupervised*, yang menyiratkan bahwa metode ini berusaha menemukan hubungan antara n pengamatan tanpa dilatih oleh variabel respons.
+
+Pengelompokan memungkinkan kita untuk mengidentifikasi pengamatan mana yang serupa, dan berpotensi mengkategorikannya di dalamnya. K-means clustering adalah metode clustering yang paling sederhana dan paling umum digunakan untuk membagi dataset menjadi satu set k grup.
+
+Package yang dibutuhkan:
+```{r message=FALSE}
+library(tidyverse)  # data manipulation
+library(cluster)    # clustering algorithms
+library(factoextra) # clustering algorithms & visualization
+```
+
+Contoh syntax:
+```{r}
+# load data
+df <- USArrests
+
+# remove missing value
+df <- na.omit(df)
+
+# standarizing
+df <- scale(df)
+
+# K-Means algorithm
+k2 <- kmeans(df, centers=2)
+str(k2)
+```
+Terdapat beberaoa output dari fitting K-Means, namun ada beberapa yang paling penting yaitu:
+
+- `cluster`: Sebuah vektor integer (from 1:k) berisikan label cluster yang diperoleh dari setiap titik.
+- `centers`: Berisi centroid atau titik pusat cluster.
+- `totss`: Total jumlah kuadrat.
+- `withinss`: Vektor jumlah kuadrat dalam cluster, satu komponen per cluster.
+- `tot.withinss`: Jumlah total kuadrat dalam cluster, i.e. sum(withinss).
+- `betweenss`: Jumlah kuadrat antar-cluster, i.e. `$totss-tot.withinss$`.
+- `size`: Jumlah poin di setiap cluster.
+
+Visualisasi:
+```{r}
+fviz_cluster(k2, data = df)
+```
+
+## 3.2. DBScan
+
+Density-Based Clustering of Applications with Noise (DBScan) adalah algoritma pembelajaran Non-linear tanpa pengawasan. Itu memang menggunakan gagasan keterjangkauan kepadatan dan konektivitas kepadatan. Data dipartisi ke dalam kelompok-kelompok dengan karakteristik atau klaster yang sama tetapi tidak perlu menentukan jumlah kelompok tersebut terlebih dahulu. Sebuah cluster didefinisikan sebagai satu set maksimum titik-titik yang terhubung secara padat. Ia menemukan kelompok bentuk sewenang-wenang dalam database spasial dengan noise.
+
+Contoh syntax jika menggunakan data iris:
+```{r eval=FALSE}
+install.packages("fpc")
+```
+```{r}
+# load package
+library(fpc)
+
+# remove label in iris
+iris_1 <- iris[-5]
+
+# Fitting DBScan clustering Model 
+# to training dataset
+set.seed(220)  # Setting seed
+Dbscan_cl <- dbscan(iris_1, eps = 0.45, MinPts = 5)
+Dbscan_cl
+
+# Checking cluster
+Dbscan_cl$cluster
+
+# Table
+table(Dbscan_cl$cluster, iris$Species)
+  
+# Plotting Cluster
+plot(Dbscan_cl, iris_1, main = "DBScan")
+plot(Dbscan_cl, iris_1, main = "Petal Width vs Sepal Length")
+
+```
+
+## 3.3. Hierarchical Clustering
+
+Hierarchical clustering dapat dibagi menjadi 2 tipe: *agglomerative* dan *divisive*.
+
+1. **Agglomerative clustering**: Ini juga dikenal sebagai AGNES (Agglomerative Nesting). Ia bekerja secara bottom-up. Artinya, setiap objek pada awalnya dianggap sebagai cluster elemen tunggal. Pada setiap langkah algoritma, dua cluster yang paling mirip digabungkan menjadi cluster baru yang lebih besar. Prosedur ini diulang sampai semua titik menjadi anggota hanya satu cluster besar. Hasilnya adalah pohon yang dapat diplot sebagai dendrogram.
+2. **Divisive hierarchical clustering**: Ini juga dikenal sebagai DIANA (Divise Analysis) dan bekerja secara top-down. Algoritma tersebut merupakan kebalikan dari AGNES. Ini dimulai dengan root, di mana semua objek termasuk dalam satu cluster. Pada setiap langkah iterasi, cluster yang paling heterogen dibagi menjadi dua. Proses ini diulang sampai semua objek berada di cluster mereka sendiri.
+
+Mari kita mencoba menggunakan data sample.
+```{r}
+# load data
+df <- USArrests
+
+# remove missing value
+df <- na.omit(df)
+
+# scaling data
+df <- scale(df)
+```
+
+### Agglomerative Clustering
+
+Kita dapat melakukan aglomerative HC dengan `hclust`. Pertama kita menghitung nilai dissimilarity dengan `dist` dan kemudian memasukkan nilai-nilai ini ke dalam `hclust` dan menentukan metode aglomerasi yang akan digunakan (yaitu “complete”, “average”, “single”, “ward.D”). Kita kemudian dapat memplot dendrogram.
+```{r}
+# Compute with agnes
+hc2 <- agnes(df, method = "complete")
+
+# Agglomerative coefficient
+hc2$ac
+## [1] 0.8531583
+```
+Kita bisa mencari metode HC mana yang dapat mengidentifikasi lebih kuat dalam hal struktur cluster. Sebagai contoh, kita akan mengidentifikasi antara 3 metode yaitu ("average", "single", "complete", "ward").
+```{r}
+# methods to assess
+m <- c( "average", "single", "complete", "ward")
+names(m) <- c( "average", "single", "complete", "ward")
+
+# function to compute coefficient
+ac <- function(x) {
+  agnes(df, method = x)$ac
+}
+
+map_dbl(m, ac)
+##   average    single  complete      ward 
+## 0.7379371 0.6276128 0.8531583 0.9346210
+```
+Maka diperoleh methode `ward` merupakan yang terbaik. Visualisasikan HC:
+```{r}
+hc3 <- agnes(df, method = "ward")
+pltree(hc3, cex = 0.6, hang = -1, main = "Dendrogram of agnes") 
+```
+
+### Divisive Hierarchical Clustering
+
+Fungsi pada R `diana` yang disediakan oleh package `cluster` memungkinkan kita untuk melakukan pengelompokan secara hierarkis yang memecah belah. `diana` bekerja mirip dengan `agnes`; namun, tidak ada metode yang disediakan.
+```{r}
+# compute divisive hierarchical clustering
+hc4 <- diana(df)
+
+# Divise coefficient; amount of clustering structure found
+hc4$dc
+## [1] 0.8514345
+
+# plot dendrogram
+pltree(hc4, cex = 0.6, hang = -1, main = "Dendrogram of diana")
+```
+
+# 4. Evaluasi Performa
+
+Sebagai seorang data science, setiap model yang diperoleh belum tentu sempurna. Model yang diperoleh haruslah dilakukan evaluasi sehingga terpilih model dengan performa terbaik. Namun dalam hal regresi atau klasifikasi terdapat perbedaan evaluasi performa. Dalam regresi kita biasa menggunakan MAPE, MSE, dan sebagainya yaitu dengan formula sebagai berikut:
+
+$$ MSE = \frac{1}{n}{\sum}(y-\hat y)^2 $$
+$$ MAPE = {\sum}\lvert\frac{y_i - \hat y_i}{\hat y_i}\rvert \times 100$$
+$$ MAE = \frac{{\sum}\lvert y_i - x_i\rvert}{n}$$
+
+Sedangkan, dalam klasifikasi kita biasa menggunakan:
+
+$$ Precision = \frac{True Positive}{True Positive + False Positive}$$
+$$ Recall = \frac{True Positive}{True Positive + False Negative}$$
+$$ Accuracy = \frac{True Negative + True Positive}{True Positive + False Positive + True Negative + False Negative}$$
+$$ F1-score = 2 * \frac{precision * recall}{precision + recall}$$
+
+
+<p style="text-align:right;">Arranged by: Aditya Wisnugraha Sugiyarto S.Si.</p>
